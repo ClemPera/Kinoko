@@ -9,3 +9,5 @@ seaborn
 scikit-learn
 tensorflow
 timm
+transformers
+keras_hub==0.26.0
