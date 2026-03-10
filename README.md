@@ -14,3 +14,7 @@
 - remove `conditionally edible`
 - merge `deadly` inside `poisonous`
 - remove `Armillaria Mellea` and `Suillus granulatus` from `poisonous` (duplicated from `edible`)
+
+## Target
+0: edible
+1: poisonous
