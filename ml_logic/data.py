@@ -50,8 +50,8 @@ def get_data_reduced(path) -> pd.DataFrame:
     - keep the species only when tabular AND image available
     """
     ## Liste champignons (via noms scientifiques) dans les images
-    path_edible = f"{path}/data/image_dataset/edible"
-    path_poisonous = f"{path}/data/image_dataset/poisonous"
+    path_edible = f"{path}/image_dataset/edible"
+    path_poisonous = f"{path}/image_dataset/poisonous"
 
     # Liste des sous-dossiers
     list_edible = [f for f in os.listdir(path_edible)
@@ -69,7 +69,7 @@ def get_data_reduced(path) -> pd.DataFrame:
         .str.replace("_", " ", regex=False).str.replace("-", " ", regex=False)
 
     # garder que le tabulaire dont l'espèce est présente dans les données d'image
-    data_tabular_image = get_data().merge(df_concat, how='inner', on='scientific_name')
+    data_tabular_image = get_data(path).merge(df_concat, how='inner', on='scientific_name')
 
     print("✅ Reduced tabular data loaded and cleaned, shape:", data_tabular_image.shape)
     return data_tabular_image
