@@ -35,8 +35,8 @@ def prediction(baseline, augmented, val_ds, class_names, timestamp):
     df_proba_results["Baseline_class"] = df_proba_results["Baseline_label"].map(class_map)
     df_proba_results["Augmented_class"] = df_proba_results["Augmented_label"].map(class_map)
 
-    os.makedirs("results", exist_ok=True)
-    df_proba_results.to_csv(f"results/baselines_probability_{timestamp}.csv", index=False)
+    os.makedirs("DL_logic/results", exist_ok=True)
+    df_proba_results.to_csv(f"DL_logic/results/baselines_probability_{timestamp}.csv", index=False)
 
     return df_proba_results
 
@@ -63,7 +63,7 @@ def evaluate(baseline, augmented, val_ds, timestamp):
 
     df_results = pd.DataFrame(results)
 
-    os.makedirs("results", exist_ok=True)
-    df_results.to_csv(f"results/df_results_eval_{timestamp}.csv", index=False)
+    os.makedirs("DL_logic/results", exist_ok=True)
+    df_results.to_csv(f"DL_logic/results/df_results_eval_{timestamp}.csv", index=False)
 
     return df_results

@@ -4,7 +4,7 @@ import os
 from tensorflow.keras.callbacks import EarlyStopping, CSVLogger
 from tensorflow.keras import callbacks
 
-from model import initialize_baseline_model, compile_baseline_model, initialize_augmented_model, compile_augmented_model
+from DL_logic.model import initialize_baseline_model, compile_baseline_model, initialize_augmented_model, compile_augmented_model
 # ====================================================
 
 
@@ -36,9 +36,9 @@ def save_model():
     Create a folder named 'models' and save models
     """
 
-    os.makedirs("models", exist_ok=True)
-    MODEL_1 = "models/model_1.keras"
-    MODEL_2 = "models/augmented_1.keras"
+    os.makedirs("DL_logic/models", exist_ok=True)
+    MODEL_1 = "DL_logic/models/model_1.keras"
+    MODEL_2 = "DL_logic/models/augmented_1.keras"
     return MODEL_1, MODEL_2
 
     # ===================== 🏋 Training history logs ======================
@@ -47,9 +47,9 @@ def save_logs(timestamp):
     Create a folder 'logs' and save history
     """
 
-    os.makedirs("logs", exist_ok=True)
-    csv_logger_1 = CSVLogger(f"logs/baseline_history_{timestamp}.csv")
-    csv_logger_2 = CSVLogger(f"logs/augmented_history_{timestamp}.csv")
+    os.makedirs("DL_logic/logs", exist_ok=True)
+    csv_logger_1 = CSVLogger(f"DL_logic/logs/baseline_history_{timestamp}.csv")
+    csv_logger_2 = CSVLogger(f"DL_logic/logs/augmented_history_{timestamp}.csv")
     return csv_logger_1, csv_logger_2
 
 # ===================== 🔧 Callbacks ======================

@@ -1,15 +1,27 @@
 # ===================== IMPORTS ======================
 from datetime import datetime
 
-from data import load_data
-from train import train_model
-from evaluate import prediction, evaluate
-from utils import plot_baseline, plot_comparison
+import matplotlib as plt
+
+from DL_logic.utils.data_utils import load_data
+from DL_logic.train import train_model
+from DL_logic.evaluate import prediction, evaluate
+from DL_logic.utils.plots_utils import plot_baseline, plot_comparison
 # ====================================================
 
 
 # ░░░░░░░░░░░░░░ 🔬 Main ░░░░░░░░░░░░░░
 def main():
+    """
+    Main entry point for the deep learning pipeline
+    1. Load datasets
+    2. Train baseline and
+    3. Perform predictions & evaluate models on the validation sets
+    4. Print results & save plots with timestamped filenames
+
+    - 2 seconds of display for the plots before they are automatically closed.
+    - Plots are stored in 'DL_logic/plots'.
+    """
 
     # ░░ Data ░░
     train_ds, val_ds = load_data()
@@ -37,8 +49,17 @@ def main():
     print(augmented.evaluate(val_ds))
     print("---" * 40)
 
+    # ░░ Plot Baseline ░░
     plot_baseline(history_1, timestamp)
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close('all')
+
+    # ░░ Plot Comparison ░░
     plot_comparison(history_1, history_2, timestamp)
+    plt.show(block=False)
+    plt.pause(2)
+    plt.close('all')
 
     print("✅ Results summary saved")
 
