@@ -3,10 +3,11 @@ import os
 
 def get_data() -> pd.DataFrame:
     """
-    Clean raw data
-    - load
+    Create a dataset with all tabular secondary_data, with Species name from primary_data
+    Create a link with species_name to have the scientific name, so we can merge with images later on
+    - load from all table datasets
     - assign species name to df_secondary
-    - feature selection
+    - feature selection (facilitate user entries)
     """
     # Load data from folder
     df_primary = pd.read_csv("../data/table_dataset/primary_data.csv", sep=";")
@@ -39,6 +40,11 @@ def get_data() -> pd.DataFrame:
     return data_tabular_rdm
 
 def get_data_reduced() -> pd.DataFrame:
+    """
+    From get_data(), keep the species that are common for tabular and images
+    - load images
+    - keep the species only when tabular AND image available
+    """
     ## Liste champignons (via noms scientifiques) dans les images
     path_edible = "../data/image_dataset/edible"
     path_poisonous = "../data/image_dataset/poisonous"

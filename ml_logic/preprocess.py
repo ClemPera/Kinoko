@@ -28,7 +28,7 @@ def tts(df: pd.DataFrame, test_size=0.3, random_state=3):
 
 def preprocess_features():
     """
-    Preprocess pipeline to fit_transform() on train data
+    Preprocess pipeline to apply on the cleaned data from get_data()
     """
     # Preprocess pipeline
     num_transformer = make_pipeline(SimpleImputer(strategy="median"), MinMaxScaler())

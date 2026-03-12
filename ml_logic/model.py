@@ -6,10 +6,10 @@ from ml_logic.data import get_data, get_data_reduced
 from ml_logic.preprocess import preprocess_features, tts
 from utils import add_noise_to_dataset
 
-from typing import Literal
-
 def define_model():
-
+    """
+    Define the model to perform on tabular data
+    """
     model = XGBClassifier(objective="binary:logistic",
                           eval_metric="logloss",
                           random_state=3)
@@ -19,7 +19,9 @@ def train_model(X_train,
                 y_train,
                 pipeline):
     """
-    Model to train
+    Training the model:
+    - X_train, y_train : from tts()
+    - pipeline: from preprocess_features()
     """
     # call the function made before
     model = define_model()
@@ -34,7 +36,11 @@ def train_model(X_train,
 
 
 def predict(model, data_test):
-    
+    """
+    Prediction function, gives out the predicted class and the associated prob
+    - model : model trained before
+    - data_test : can be a single data to test, or a dataframe with xx rows
+    """
     #Predict and prob
     pred = model.predict(data_test)
     proba = model.predict_proba(data_test)
