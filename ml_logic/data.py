@@ -40,8 +40,8 @@ def get_data() -> pd.DataFrame:
 
 def get_data_reduced() -> pd.DataFrame:
     ## Liste champignons (via noms scientifiques) dans les images
-    path_edible = "data/image_dataset/edible"
-    path_poisonous = "data/image_dataset/poisonous"
+    path_edible = "../data/image_dataset/edible"
+    path_poisonous = "../data/image_dataset/poisonous"
 
     # Liste des sous-dossiers
     list_edible = [f for f in os.listdir(path_edible)
