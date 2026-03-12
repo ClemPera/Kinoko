@@ -32,6 +32,8 @@ def train_model(X_train,
     # train model
     pipe_model.fit(X_train, y_train)
 
+    # TODO: add something to save model?
+
     return pipe_model
 
 

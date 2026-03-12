@@ -8,7 +8,7 @@ import keras
 import keras_hub
 
 import numpy as np
-from PIL import Image
+from PIL import ImageFile
 
 IMG_SIZE: int = 518
 BATCH_SIZE: int = 32
@@ -209,7 +209,7 @@ def test(model: keras.Model, test_ds: Dataset) -> list[float]:
     print(f"loss: {results[0]}\naccuracy: {results[1]}\nrecall: {results[2]}\nprecision: {results[3]}")
     return results
 
-def predict(model: keras.Model, image: Image.ImageFile.ImageFile) -> tuple[str, float]:
+def predict(model: keras.Model, image: ImageFile.ImageFile) -> tuple[str, float]:
     """
     Run inference on a single image and return the predicted class and confidence.
 
@@ -234,7 +234,7 @@ def predict(model: keras.Model, image: Image.ImageFile.ImageFile) -> tuple[str, 
     predicted_class: str = "1" if confidence >= 0.5 else "0"
     
     # Show the right confidence when it's edible
-    if predicted_class == 0:
+    if predicted_class == "0":
         confidence = 1 - confidence
 
     return predicted_class, confidence
