@@ -52,7 +52,7 @@ def predict(model, data_test):
     res = []
 
     for p, pr in zip(pred, proba):
-        prob = pr[p] * 100
+        prob = round(pr[p] * 100, 2)
         res.append(f"{labels[p]} avec {prob:.1f}% proba")
 
     return res
