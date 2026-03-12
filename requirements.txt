@@ -9,3 +9,8 @@ seaborn
 scikit-learn
 tensorflow
 xgboost
+timm
+transformers
+keras_hub==0.26.0
+ipywidgets
+streamlit
