@@ -2,7 +2,6 @@ import os
 
 from tensorflow.keras.utils import image_dataset_from_directory
 from tensorflow.data import AUTOTUNE, Dataset
-from tensorflow.config import list_physical_devices
 
 os.environ["KERAS_BACKEND"] = "tensorflow"
 import keras
@@ -10,8 +9,6 @@ import keras_hub
 
 import numpy as np
 
-ROOT: str = "../"
-IMAGE_DATA_DIR: str = f"{ROOT}/data/image_dataset"
 IMG_SIZE: int = 518
 BATCH_SIZE: int = 32
 EPOCHS: int = 50
@@ -72,8 +69,9 @@ def get_cls_dinov2() -> keras.KerasTensor:
     before being passed to the backbone.
 
     Returns:
-        A KerasTensor of shape (batch, hidden_dim) representing the CLS token
-        extracted from the last layer of the backbone.
+        - A KerasTensor of shape (batch, hidden_dim) representing the CLS token
+            extracted from the last layer of the backbone.
+        - A Kera Input reprensenting the inputs used by the model
     """
     backbone: keras_hub.models.DINOV2Backbone = keras_hub.models.DINOV2Backbone.from_preset("dinov2_base")
     backbone.trainable = False
@@ -88,10 +86,10 @@ def get_cls_dinov2() -> keras.KerasTensor:
     backbone_out: keras.KerasTensor = backbone({"images": x})
     outputs: keras.KerasTensor = backbone_out[:, 0, :]
 
-    return outputs
+    return inputs, outputs
 
 
-def create_head(pretrained_model_cls: keras.KerasTensor) -> keras.Model:
+def create_head(inputs: keras.Input, pretrained_model_cls: keras.KerasTensor) -> keras.Model:
     """
     Attach a classification head on top of a backbone CLS token output.
 
@@ -110,7 +108,6 @@ def create_head(pretrained_model_cls: keras.KerasTensor) -> keras.Model:
     x = keras.layers.Dropout(0.3)(x)
     predictions: keras.KerasTensor = keras.layers.Dense(1, activation="sigmoid")(x)
 
-    inputs: keras.KerasTensor = keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     model: keras.Model = keras.Model(inputs=inputs, outputs=predictions)
 
     return model
@@ -143,7 +140,7 @@ def train(model: keras.Model, train_ds: Dataset, val_ds: Dataset) -> keras.callb
           restoring the best weights.
         - ReduceLROnPlateau: halves LR if val_loss stagnates for 3 epochs,
           down to a minimum of 1e-7.
-        - ModelCheckpoint: saves the best model to {ROOT}/checkpoints/dinov2.keras.
+        - ModelCheckpoint: saves the best model to checkpoints/dinov2.keras.
 
     Args:
         model: A compiled keras.Model.
@@ -166,7 +163,7 @@ def train(model: keras.Model, train_ds: Dataset, val_ds: Dataset) -> keras.callb
             min_lr=1e-7
         ),
         keras.callbacks.ModelCheckpoint(
-            filepath=f"{ROOT}/checkpoints/dinov2.keras",
+            filepath=f"checkpoints/dinov2.keras",
             save_best_only=True,
             save_freq="epoch",
         ),
