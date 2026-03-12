@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from utils import add_noise_to_dataset
 
-def get_data() -> pd.DataFrame:
+def get_data(path) -> pd.DataFrame:
     """
     Create a dataset with all tabular secondary_data, with Species name from primary_data
     Create a link with species_name to have the scientific name, so we can merge with images later on
@@ -11,9 +11,9 @@ def get_data() -> pd.DataFrame:
     - feature selection (facilitate user entries)
     """
     # Load data from folder
-    df_primary = pd.read_csv("../data/table_dataset/primary_data.csv", sep=";")
-    df_secondary = pd.read_csv("../data/table_dataset/secondary_data.csv", sep=";")
-    df_mushnames = pd.read_csv("../data/table_dataset/species_names.csv", sep =";")
+    df_primary = pd.read_csv(f"{path}/table_dataset/primary_data.csv", sep=";")
+    df_secondary = pd.read_csv(f"{path}/table_dataset/secondary_data.csv", sep=";")
+    df_mushnames = pd.read_csv(f"{path}/table_dataset/species_names.csv", sep =";")
 
     # Species name from primary, add to secondary
     primary_name_df = df_primary[['family','name']]
@@ -43,15 +43,15 @@ def get_data() -> pd.DataFrame:
     print("✅ Tabular data loaded and cleaned, shape:", data_tabular_rdm.shape)
     return data_tab_rdm_noise
 
-def get_data_reduced() -> pd.DataFrame:
+def get_data_reduced(path) -> pd.DataFrame:
     """
     From get_data(), keep the species that are common for tabular and images
     - load images
     - keep the species only when tabular AND image available
     """
     ## Liste champignons (via noms scientifiques) dans les images
-    path_edible = "../data/image_dataset/edible"
-    path_poisonous = "../data/image_dataset/poisonous"
+    path_edible = f"{path}/data/image_dataset/edible"
+    path_poisonous = f"{path}/data/image_dataset/poisonous"
 
     # Liste des sous-dossiers
     list_edible = [f for f in os.listdir(path_edible)
@@ -65,9 +65,11 @@ def get_data_reduced() -> pd.DataFrame:
     df2 = pd.DataFrame(list_poisonous, columns=["scientific_name"])
     df2['type'] = "poisonous"
     df_concat = pd.concat([df1, df2], ignore_index=True)
-    df_concat['scientific_name'] = df_concat['scientific_name'].str.replace("_", " ", regex=False).str.replace("-", " ", regex=False)
+    df_concat['scientific_name'] = df_concat['scientific_name']\
+        .str.replace("_", " ", regex=False).str.replace("-", " ", regex=False)
 
     # garder que le tabulaire dont l'espèce est présente dans les données d'image
     data_tabular_image = get_data().merge(df_concat, how='inner', on='scientific_name')
 
+    print("✅ Reduced tabular data loaded and cleaned, shape:", data_tabular_image.shape)
     return data_tabular_image
