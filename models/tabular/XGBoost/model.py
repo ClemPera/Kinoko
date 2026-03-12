@@ -2,8 +2,8 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.pipeline import make_pipeline
 
-from ml_logic.data import get_data, get_data_reduced
-from ml_logic.preprocess import preprocess_features, tts
+from XGBoost.data import get_data, get_data_reduced
+from XGBoost.preprocess import preprocess_features, tts
 from utils import add_noise_to_dataset
 
 def define_model():
