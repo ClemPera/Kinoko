@@ -1,5 +1,6 @@
-import pandas as pd
 import os
+import pandas as pd
+from utils import add_noise_to_dataset
 
 def get_data() -> pd.DataFrame:
     """
@@ -36,8 +37,11 @@ def get_data() -> pd.DataFrame:
     # Randomly ordered df
     data_tabular_rdm = data_tabular_final.sample(frac=1, random_state=3).reset_index(drop=True)
 
+    # Apply a noise to the data : TOO perfect is not good
+    data_tab_rdm_noise = add_noise_to_dataset(data_tabular_rdm, noise_fraction=0.12)
+
     print("✅ Tabular data loaded and cleaned, shape:", data_tabular_rdm.shape)
-    return data_tabular_rdm
+    return data_tab_rdm_noise
 
 def get_data_reduced() -> pd.DataFrame:
     """
