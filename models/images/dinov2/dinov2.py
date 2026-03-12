@@ -8,6 +8,7 @@ import keras
 import keras_hub
 
 import numpy as np
+from PIL import Image
 
 IMG_SIZE: int = 518
 BATCH_SIZE: int = 32
@@ -208,7 +209,7 @@ def test(model: keras.Model, test_ds: Dataset) -> list[float]:
     print(f"loss: {results[0]}\naccuracy: {results[1]}\nrecall: {results[2]}\nprecision: {results[3]}")
     return results
 
-def predict(model: keras.Model, image_path: str) -> tuple[str, float]:
+def predict(model: keras.Model, image: Image.ImageFile.ImageFile) -> tuple[str, float]:
     """
     Run inference on a single image and return the predicted class and confidence.
 
@@ -219,17 +220,21 @@ def predict(model: keras.Model, image_path: str) -> tuple[str, float]:
 
     Args:
         model: A trained keras.Model.
-        image_path: Path to the image file to classify.
+        image: Image file to classify.
 
     Returns:
         A tuple of (predicted_class, confidence) where predicted_class is a
         string ("0" or "1") and confidence is the raw sigmoid output in [0, 1].
     """
-    img: keras.KerasTensor = keras.utils.load_img(image_path, target_size=(IMG_SIZE, IMG_SIZE))
+    img = image.resize((IMG_SIZE, IMG_SIZE))
     img_array: np.ndarray = keras.utils.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)  # (1, IMG_SIZE, IMG_SIZE, 3)
 
     confidence: float = float(model.predict(img_array)[0][0])
     predicted_class: str = "1" if confidence >= 0.5 else "0"
+    
+    # Show the right confidence when it's edible
+    if predicted_class == 0:
+        confidence = 1 - confidence
 
     return predicted_class, confidence
