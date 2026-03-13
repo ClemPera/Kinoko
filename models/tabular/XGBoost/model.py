@@ -51,6 +51,9 @@ def predict(model, data_test):
 
     for p, pr in zip(pred, proba):
         prob = round(pr[p] * 100, 2)
-        res.append(f"{labels[p]} avec {prob:.1f}% proba")
+        res.append({
+            "labels": labels[p],
+            "prob": float(prob)
+        })
 
     return res

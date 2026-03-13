@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
@@ -23,7 +23,7 @@ model_baseline_aug: Model | None = None
 # Tabular models
 model_XGBoost: XGBClassifier | None = None
 
-# Allowing all middleware is optional, but good practice for dev purposes
+# Allowing all middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins
@@ -31,6 +31,7 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
 
 @app.get("/predict_tab")
 def predict_tab(
@@ -44,6 +45,15 @@ def predict_tab(
     habitat: str,
     season: str
 ):
+    """
+    Runs the predict on the tabular model with tabular inputs
+
+    Args: 
+        All mushrooms features handled
+
+    Returns:
+        A list containing a key `results` containing predicted `label` and `prob`
+    """
     global model_XGBoost
 
     data = pd.DataFrame([{
@@ -61,64 +71,85 @@ def predict_tab(
     if model_XGBoost is None:
         model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost")
         assert model_XGBoost != None
-    
+
     result = XGBoost.model.predict(model_XGBoost, data)
 
-    return {
-        "result": result
-    }
+    return result
+
 
 @app.post("/predict_img")
 def predict_img(
     model: str,
     file: UploadFile,
 ):
+    """
+    Runs the predict on the image model 
+
+    Args: 
+        model: string of the model to use. Please see endpoint `/models`
+        file: image to predict on
+
+    Returns:
+        A json containing `probability` and `class`
+    }
+    """
     global model_dinov2, model_baseline, model_baseline_aug
 
     image: ImageFile.ImageFile = Image.open(file.file)
     match model:
         case "dinov2_baseline":
             if model_dinov2 is None:
-                model_dinov2 = dinov2.load_model_from_checkpoint("models/images/dinov2/checkpoints/dinov2.keras")
+                model_dinov2 = dinov2.load_model_from_checkpoint(
+                    "models/images/dinov2/checkpoints/dinov2.keras")
                 assert model_dinov2 != None
-            predicted_class, confidence = dinov2.predict(model_dinov2, image)
 
-            return {
-                "predicted_class": predicted_class,
-                "confidence": confidence
-            }
+            class_names, probability = dinov2.predict(model_dinov2, image)
+
         case "baseline":
             if model_baseline is None:
-                model_baseline = baseline.utils.load_keras_model("model_1.keras")
-                model_baseline_aug = baseline.utils.load_keras_model("augmented_1.keras")
+                model_baseline = baseline.utils.load_keras_model(
+                    "model_1.keras")
+                model_baseline_aug = baseline.utils.load_keras_model(
+                    "augmented_1.keras")
                 assert model_baseline != None
                 assert model_baseline_aug != None
-        
+
             df_image = pil_to_dataset(image)
             df_proba_results = baseline.evaluate.prediction(
-                model_baseline, 
-                model_baseline_aug, 
-                df_image, 
-                ['edible', 'poisonous'], 
+                model_baseline,
+                model_baseline_aug,
+                df_image,
+                ['edible', 'poisonous'],
                 datetime.now().strftime("%d%m%Y_%H%M%S")
             )
-            
-            return {
-                "df_proba_results": df_proba_results.to_json(),
-            }
-        
+
+            probability: dict = {"Baseline": str(df_proba_results["Baseline_proba"]),
+                                 "Augmented": str(df_proba_results["Augmented_proba"])}
+
+            class_names: dict = {"Baseline": str(df_proba_results["Baseline_class"]),
+                                 "Augmented:": str(df_proba_results["Augmented_class"])}
+        case _:
+            raise HTTPException(
+                status_code=400, detail="The model selected doesn't exist")
+
     return {
-        "error": "The model selected doesn't exist"
+        "probability": probability,
+        "class": class_names
     }
+
 
 @app.get("/models")
 def models():
+    """
+    Returns the list of models available
+    """
     return {
         "img_models": ["dinov2_baseline", "baseline"],
         "tab_models": ["XGboost"]
     }
 
-@app.get("/predict_all")
+
+@app.post("/predict_all")
 def predict_all(
     cap_shape: str,
     cap_color: str,
@@ -131,6 +162,15 @@ def predict_all(
     season: str,
     file: UploadFile,
 ):
+    """
+    Run the predictions for every models available
+
+    Args:
+        All mushrooms features handled
+        file: image to predict on
+    Returns:
+        All models and their prediction results
+    """
     results: dict[str, dict] = {
         "img_models": {},
         "tab_models": {}
@@ -151,7 +191,6 @@ def predict_all(
                                                    has_ring,
                                                    habitat,
                                                    season,
-                                                  )
+                                                   )
 
     return results
-
