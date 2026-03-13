@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-from utils import add_noise_to_dataset
+
+from .utils import add_noise_to_dataset
 
 def get_data(path) -> pd.DataFrame:
     """

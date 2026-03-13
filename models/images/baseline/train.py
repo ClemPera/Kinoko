@@ -4,7 +4,7 @@ import os
 from tensorflow.keras.callbacks import EarlyStopping, CSVLogger
 from tensorflow.keras import callbacks
 
-from baseline.model import initialize_baseline_model, compile_baseline_model, initialize_augmented_model, compile_augmented_model
+from .model import initialize_baseline_model, compile_baseline_model, initialize_augmented_model, compile_augmented_model
 # ====================================================
 
 

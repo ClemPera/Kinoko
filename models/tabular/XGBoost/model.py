@@ -2,9 +2,9 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.pipeline import make_pipeline
 
-from XGBoost.data import get_data, get_data_reduced
-from XGBoost.preprocess import preprocess_features, tts
-from utils import add_noise_to_dataset
+from .data import get_data, get_data_reduced
+from .preprocess import preprocess_features, tts
+from .utils import add_noise_to_dataset
 
 def define_model():
     """
@@ -32,8 +32,6 @@ def train_model(X_train,
     # train model
     pipe_model.fit(X_train, y_train)
 
-    # TODO: add something to save model?
-
     return pipe_model
 
 
@@ -53,6 +51,9 @@ def predict(model, data_test):
 
     for p, pr in zip(pred, proba):
         prob = round(pr[p] * 100, 2)
-        res.append(f"{labels[p]} avec {prob:.1f}% proba")
+        res.append({
+            "labels": labels[p],
+            "prob": float(prob)
+        })
 
     return res

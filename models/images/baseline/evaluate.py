@@ -25,11 +25,11 @@ def prediction(baseline, augmented, val_ds, class_names, timestamp):
     # ░░ DataFrame ░░
 
     df_proba_results = pd.DataFrame({
-    "Baseline_proba": preds_base.flatten(),
-    "Augmented_proba": preds_augm.flatten(),
-    "Baseline_label": pred_labels.flatten(),
-    "Augmented_label": pred_labels_2.flatten()
-})
+        "Baseline_proba": preds_base.flatten(),
+        "Augmented_proba": preds_augm.flatten(),
+        "Baseline_label": pred_labels.flatten(),
+        "Augmented_label": pred_labels_2.flatten()
+    })
 
     class_map = dict(enumerate(class_names))
     df_proba_results["Baseline_class"] = df_proba_results["Baseline_label"].map(class_map)
