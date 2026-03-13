@@ -5,7 +5,7 @@ from tensorflow.keras.models import load_model
 # ====================================================
 
 
-def load_leras_model(model_file: str):
+def load_keras_model(model_file: str):
     """
     Load Keras model from 'DL_logic/models/' for an API endpoint
 
