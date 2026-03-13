@@ -35,15 +35,15 @@ app.add_middleware(
 
 @app.get("/predict_tab")
 def predict_tab(
-    cap_shape: str,
-    cap_color: str,
-    does_bruise_or_bleed: str,
-    gill_attachment: str,
-    gill_color: str,
-    stem_color: str,
-    has_ring: str,
-    habitat: str,
-    season: str
+    cap_shape: str|None = None,
+    cap_color: str|None = None,
+    does_bruise_or_bleed: str|None = None,
+    gill_attachment: str|None = None,
+    gill_color: str|None = None,
+    stem_color: str|None = None,
+    has_ring: str|None = None,
+    habitat: str|None = None,
+    season: str|None = None
 ):
     """
     Runs the predict on the tabular model with tabular inputs
@@ -151,16 +151,16 @@ def models():
 
 @app.post("/predict_all")
 def predict_all(
-    cap_shape: str,
-    cap_color: str,
-    does_bruise_or_bleed: str,
-    gill_attachment: str,
-    gill_color: str,
-    stem_color: str,
-    has_ring: str,
-    habitat: str,
-    season: str,
     file: UploadFile,
+    cap_shape: str|None = None,
+    cap_color: str|None = None,
+    does_bruise_or_bleed: str|None = None,
+    gill_attachment: str|None = None,
+    gill_color: str|None = None,
+    stem_color: str|None = None,
+    has_ring: str|None = None,
+    habitat: str|None = None,
+    season: str|None = None,
 ):
     """
     Run the predictions for every models available
