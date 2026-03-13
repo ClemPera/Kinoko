@@ -10,7 +10,6 @@ from models.tabular import XGBoost
 from models.images.dinov2 import dinov2
 from models.images import baseline
 
-
 app = FastAPI()
 
 # Image models
@@ -44,20 +43,21 @@ def predict_tab(
 ):
     global model_XGBoost
 
-    data = pd.DataFrame([
-        cap_shape,
-        cap_color,
-        does_bruise_or_bleed,
-        gill_attachment,
-        gill_color,
-        stem_color,
-        has_ring,
-        habitat,
-        season
-    ])
-
-    if not model_XGBoost:
-        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost/models/XGBoost.keras")
+    data = pd.DataFrame([{
+        "cap_shape": cap_shape,
+        "cap_color": cap_color,
+        "does_bruise_or_bleed": does_bruise_or_bleed,
+        "gill_attachment": gill_attachment,
+        "gill_color": gill_color,
+        "stem_color": stem_color,
+        "has_ring": has_ring,
+        "habitat": habitat,
+        "season": season
+    }])
+    
+    if model_XGBoost is None:
+        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost")
+        assert model_XGBoost != None
     
     result = XGBoost.model.predict(model_XGBoost, data)
 
@@ -75,19 +75,21 @@ def predict_img(
     image: Image.ImageFile.ImageFile = Image.open(file.file)
     match model:
         case "dinov2_baseline":
-            if not model_dinov2:
+            if model_dinov2 is None:
                 model_dinov2 = dinov2.load_model_from_checkpoint("models/images/dinov2/checkpoints/dinov2.keras")
-            
+                assert model_dinov2 != None
             predicted_class, confidence = dinov2.predict(model_dinov2, image)
-            
+
             return {
                 "predicted_class": predicted_class,
                 "confidence": confidence
             }
         case "baseline":
-            if not model_baseline:
+            if model_baseline is None:
                 model_baseline = baseline.utils.load_keras_model("models/images/baseline/models/model_1.keras")
                 model_baseline_aug = baseline.utils.load_keras_model("models/images/baseline/models/augmented_1.keras")
+                assert model_baseline != None
+                assert model_baseline_aug != None
         
             preds_base = model_baseline.predict(image, verbose=0)
             preds_augm = model_baseline_aug.predict(image, verbose=0)

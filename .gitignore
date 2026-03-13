@@ -1,5 +1,6 @@
 FungiTastic-OpenSet-Test.csv
 *.keras
+*.pkl
 .DS_Store
 .python-version
 # Byte-compiled / optimized / DLL files
