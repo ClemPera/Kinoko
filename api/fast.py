@@ -9,7 +9,7 @@ from xgboost import XGBClassifier
 from keras import Model
 
 from models.tabular import XGBoost
-from models.images.dinov2 import dinov2
+from models.images import dinov2
 from models.images import baseline
 from .utils import *
 
@@ -69,7 +69,7 @@ def predict_tab(
     }])
 
     if model_XGBoost is None:
-        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost")
+        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost") # type: ignore
         assert model_XGBoost != None
 
     result = XGBoost.model.predict(model_XGBoost, data)
@@ -99,11 +99,11 @@ def predict_img(
     match model:
         case "dinov2_baseline":
             if model_dinov2 is None:
-                model_dinov2 = dinov2.load_model_from_checkpoint(
+                model_dinov2 = dinov2.model.load_model_from_checkpoint(
                     "models/images/dinov2/checkpoints/dinov2.keras")
                 assert model_dinov2 != None
 
-            class_names, probability = dinov2.predict(model_dinov2, image)
+            class_names, probability = dinov2.inference.predict(model_dinov2, image)
 
         case "baseline":
             if model_baseline is None:
