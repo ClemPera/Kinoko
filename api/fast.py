@@ -3,19 +3,23 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
 from PIL import Image
+from xgboost import XGBClassifier
+from keras import Model
 
 from models.tabular import XGBoost
 from models.images.dinov2 import dinov2
-from keras import Model
+from models.images import baseline
+
 
 app = FastAPI()
 
 # Image models
 model_dinov2: Model | None = None
 model_baseline: Model | None = None
+model_baseline_aug: Model | None = None
 
 # Tabular models
-model_XGBoost: Model | None = None
+model_XGBoost: XGBClassifier | None = None
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
@@ -53,8 +57,7 @@ def predict_tab(
     ])
 
     if not model_XGBoost:
-        # TODO
-        model_XGBoost = XGBoost.model.load("model/tabular/checkpoints/XGBoost.keras")
+        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost/models/XGBoost.keras")
     
     result = XGBoost.model.predict(model_XGBoost, data)
 
@@ -67,7 +70,7 @@ def predict_img(
     model: str,
     file: UploadFile,
 ):
-    global model_dinov2, model_baseline
+    global model_dinov2, model_baseline, model_baseline_aug
 
     image: Image.ImageFile.ImageFile = Image.open(file.file)
     match model:
@@ -76,16 +79,26 @@ def predict_img(
                 model_dinov2 = dinov2.load_model_from_checkpoint("models/images/dinov2/checkpoints/dinov2.keras")
             
             predicted_class, confidence = dinov2.predict(model_dinov2, image)
+            
+            return {
+                "predicted_class": predicted_class,
+                "confidence": confidence
+            }
         case "baseline":
-            # TODO
             if not model_baseline:
-                pass
-                # model_baseline = 
-            pass
+                model_baseline = baseline.utils.load_keras_model("models/images/baseline/models/model_1.keras")
+                model_baseline_aug = baseline.utils.load_keras_model("models/images/baseline/models/augmented_1.keras")
+        
+            preds_base = model_baseline.predict(image, verbose=0)
+            preds_augm = model_baseline_aug.predict(image, verbose=0)
 
+            return {
+                "preds_base": preds_base,
+                "preds_augm": preds_augm
+            }
+        
     return {
-        "predicted_class": predicted_class,
-        "confidence": confidence
+        "error": "The model selected doesn't exist"
     }
 
 @app.get("/models")
@@ -131,4 +144,3 @@ def predict_all(
                                                   )
 
     return results
-
