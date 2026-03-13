@@ -2,13 +2,16 @@ from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
-from PIL import Image
+from PIL import Image, ImageFile
+from datetime import datetime
+
 from xgboost import XGBClassifier
 from keras import Model
 
 from models.tabular import XGBoost
 from models.images.dinov2 import dinov2
 from models.images import baseline
+from .utils import *
 
 app = FastAPI()
 
@@ -54,7 +57,7 @@ def predict_tab(
         "habitat": habitat,
         "season": season
     }])
-    
+
     if model_XGBoost is None:
         model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost")
         assert model_XGBoost != None
@@ -72,7 +75,7 @@ def predict_img(
 ):
     global model_dinov2, model_baseline, model_baseline_aug
 
-    image: Image.ImageFile.ImageFile = Image.open(file.file)
+    image: ImageFile.ImageFile = Image.open(file.file)
     match model:
         case "dinov2_baseline":
             if model_dinov2 is None:
@@ -86,17 +89,22 @@ def predict_img(
             }
         case "baseline":
             if model_baseline is None:
-                model_baseline = baseline.utils.load_keras_model("models/images/baseline/models/model_1.keras")
-                model_baseline_aug = baseline.utils.load_keras_model("models/images/baseline/models/augmented_1.keras")
+                model_baseline = baseline.utils.load_keras_model("model_1.keras")
+                model_baseline_aug = baseline.utils.load_keras_model("augmented_1.keras")
                 assert model_baseline != None
                 assert model_baseline_aug != None
         
-            preds_base = model_baseline.predict(image, verbose=0)
-            preds_augm = model_baseline_aug.predict(image, verbose=0)
-
+            df_image = pil_to_dataset(image)
+            df_proba_results = baseline.evaluate.prediction(
+                model_baseline, 
+                model_baseline_aug, 
+                df_image, 
+                ['edible', 'poisonous'], 
+                datetime.now().strftime("%d%m%Y_%H%M%S")
+            )
+            
             return {
-                "preds_base": preds_base,
-                "preds_augm": preds_augm
+                "df_proba_results": df_proba_results.to_json(),
             }
         
     return {
@@ -146,3 +154,4 @@ def predict_all(
                                                   )
 
     return results
+
