@@ -2,9 +2,9 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.pipeline import make_pipeline
 
-from XGBoost.data import get_data, get_data_reduced
-from XGBoost.preprocess import preprocess_features, tts
-from utils import add_noise_to_dataset
+from .data import get_data, get_data_reduced
+from .preprocess import preprocess_features, tts
+from .utils import add_noise_to_dataset
 
 def define_model():
     """
