@@ -18,3 +18,5 @@ uvicorn
 fastapi
 python-multipart
 colorama
+shap
+mlflow==2.1.1
