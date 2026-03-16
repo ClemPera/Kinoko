@@ -126,8 +126,6 @@ def predict_img(
                 datetime.now().strftime("%d%m%Y_%H%M%S")
             )
 
-            print(df_proba_results["Baseline_proba"].iloc[0])
-
             probability: dict = {"Baseline": str(df_proba_results["Baseline_proba"].iloc[0]),
                                  "Augmented": str(df_proba_results["Augmented_proba"].iloc[0])}
 
