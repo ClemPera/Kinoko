@@ -2,11 +2,12 @@
 import os
 
 from tensorflow.keras.utils import image_dataset_from_directory
+from tensorflow.data import Dataset
 # ====================================================
 
 
 # ░░░░░░░░░░░░░░ 📊 Data ░░░░░░░░░░░░░░
-def load_data(batch_size=32):
+def load_data(batch_size=32) -> tuple[Dataset, Dataset]:
     """
     Load traning and validation datasets from a directory of images.
 
@@ -23,8 +24,8 @@ def load_data(batch_size=32):
     - Batch size : 32
 
     //// Returns ////
-    - Train_ds : dataset containing the training images & labels
-    - Val ds : dataset containing the validation images & labels
+    - Train_ds : Dataset containing the training images & labels
+    - Val ds : Dataset containing the validation images & labels
     """
 
     dataset_dir = os.path.abspath("data/image_dataset")
@@ -33,8 +34,8 @@ def load_data(batch_size=32):
         dataset_dir,
         labels="inferred",
         label_mode="binary",
-        validation_split= 0.2,
-        subset= "training",
+        validation_split=0.2,
+        subset="training",
         seed=123,
         image_size=(128, 128),
         batch_size=batch_size)
@@ -43,8 +44,8 @@ def load_data(batch_size=32):
         dataset_dir,
         labels="inferred",
         label_mode="binary",
-        validation_split= 0.2,
-        subset= "validation",
+        validation_split=0.2,
+        subset="validation",
         seed=123,
         image_size=(128, 128),
         batch_size=batch_size)

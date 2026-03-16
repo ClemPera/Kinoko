@@ -6,6 +6,8 @@ import datetime
 # ====================================================
 
 # ===================== 🔮 Predictions ======================
+
+
 def prediction(model, image, save_result: bool = False) -> tuple[bool, float]:
     """
     Predict probabilities and labels for both models
@@ -30,13 +32,15 @@ def prediction(model, image, save_result: bool = False) -> tuple[bool, float]:
             "Probability": preds_base,
             "Predicted_class": pred_class,
         })
-        df_proba_results.to_csv(f"DL_logic/results/baselines_probability_{timestamp}.csv", index=False)
+        df_proba_results.to_csv(
+            f"DL_logic/results/baselines_probability_{timestamp}.csv", index=False)
 
     return pred_class, preds_base
 
 # ===================== 🏁 Evaluate ======================
 
-def evaluate(baseline, augmented, val_ds, timestamp):
+
+def evaluate(baseline, augmented, val_ds, timestamp: str):
     """
     Evaluate both models performance and save results
     """
@@ -46,18 +50,19 @@ def evaluate(baseline, augmented, val_ds, timestamp):
 
     results = [
         {
-        "model": "🧱 baseline",
-        **baseline_eval
-    },
-    {
-        "model": "💪 augmented",
-        **augmented_eval
-    }
+            "model": "🧱 baseline",
+            **baseline_eval
+        },
+        {
+            "model": "💪 augmented",
+            **augmented_eval
+        }
     ]
 
     df_results = pd.DataFrame(results)
 
     os.makedirs("DL_logic/results", exist_ok=True)
-    df_results.to_csv(f"DL_logic/results/df_results_eval_{timestamp}.csv", index=False)
+    df_results.to_csv(
+        f"DL_logic/results/df_results_eval_{timestamp}.csv", index=False)
 
     return df_results

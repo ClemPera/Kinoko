@@ -32,7 +32,8 @@ def main():
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
     # ░░ Training ░░
-    history_1, history_2, baseline, augmented = train_model(train_ds, val_ds, timestamp)
+    history_1, history_2, baseline, augmented = train_model(
+        train_ds, val_ds, timestamp)
 
     # ░░ Prediction & Evaluate ░░
     prediction(baseline, augmented, val_ds, class_names, timestamp)

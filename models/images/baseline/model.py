@@ -1,5 +1,5 @@
 # ===================== IMPORTS ======================
-from tensorflow.keras import Sequential, layers, optimizers, callbacks
+from tensorflow.keras import Sequential, layers, optimizers
 
 from tensorflow.keras.metrics import AUC
 
@@ -26,24 +26,28 @@ def initialize_baseline_model():
     """
 
     baseline = Sequential([
-        layers.Input(shape=(128, 128,3)),
+        layers.Input(shape=(128, 128, 3)),
         layers.Rescaling(1./255),
 
-        layers.Conv2D(32, kernel_size = (4,4), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(32, kernel_size=(4, 4), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(64, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(64, kernel_size=(3, 3), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(128, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(128, kernel_size=(3, 3), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(512, kernel_size=(3,3), padding="same", activation='relu'),
+        layers.Conv2D(512, kernel_size=(3, 3),
+                      padding="same", activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
         layers.Flatten(),
         layers.Dense(128, activation='relu'),
@@ -54,10 +58,12 @@ def initialize_baseline_model():
 
     return baseline
 
-# ░░ 🧱 Compile baseline ░░
-def compile_baseline_model(baseline):
+# ░░ Compile model ░░
+
+
+def compile_model(model):
     """
-    Compile the baseline mode for training
+    Compile model for training
 
     //// Architecture ////
     Loss : binary crossentropy
@@ -68,14 +74,14 @@ def compile_baseline_model(baseline):
     Compiled baseline model ready for training
     """
 
-    adam = optimizers.Adam(learning_rate = 1e-4)
-    baseline.compile(
-        loss = "binary_crossentropy",
+    adam = optimizers.Adam(learning_rate=1e-4)
+    model.compile(
+        loss="binary_crossentropy",
         optimizer=adam,
-        metrics = ["accuracy", "precision", "recall", AUC(name="auc")]
+        metrics=["accuracy", "precision", "recall", AUC(name="auc")]
     )
 
-    return baseline
+    return model
 
 
 # ═════════════════════  BASELINE MODEL DATA AUGMENTATION ═════════════════════
@@ -86,7 +92,7 @@ def initialize_augmented_model():
 
     //// Architecture ////
     - Input layer: 128x128 RGB images, recaled images
-    - Data augmentation : RandomFlip → RandomRotation → RamndomZoom
+    - Data augmentation : RandomFlip → RandomRotation → RandomZoom
     - Convolutional layers: Conv2D (kernel size, padding, strides, reLu)
         → BatchNormalization → MaxPool2D (pool size, padding)
     - GlobalAveragePooling2D → Dense (reLu, L2 regularisation) → Dropout layers
@@ -97,56 +103,39 @@ def initialize_augmented_model():
     """
 
     augmented = Sequential([
-        layers.Input(shape=(128,128,3)),
+        layers.Input(shape=(128, 128, 3)),
         layers.Rescaling(1./255),
 
         layers.RandomFlip("horizontal"),
         layers.RandomRotation(0.05),
         layers.RandomZoom(0.05),
 
-        layers.Conv2D(32, kernel_size = (4,4), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(32, kernel_size=(4, 4), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(64, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(64, kernel_size=(3, 3), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(128, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu'),
+        layers.Conv2D(128, kernel_size=(3, 3), padding="same",
+                      strides=(1, 1), activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
-        layers.Conv2D(256, kernel_size=(3,3), padding="same", activation='relu'),
+        layers.Conv2D(256, kernel_size=(3, 3),
+                      padding="same", activation='relu'),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
 
         layers.GlobalAveragePooling2D(),
-        layers.Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(1e-5)),
+        layers.Dense(128, activation='relu',
+                     kernel_regularizer=tf.keras.regularizers.l2(1e-5)),
         layers.Dropout(0.4),
 
         layers.Dense(1, activation="sigmoid")
     ])
-    return augmented
 
-# ░░ 💪 Compile Augmented ░░
-def compile_augmented_model(augmented):
-    """
-    Compile the augmented model for training
-
-    //// Architecture ////
-    Loss : binary crossentropy
-    Optimizer : adam with a 1e-4 learning rate
-    Metrics : accuracy → precision → recall → AUC
-
-    //// Return ////
-    Compiled model ready for training
-    """
-
-    adam = optimizers.Adam(learning_rate = 1e-4)
-
-    augmented.compile(
-        loss = "binary_crossentropy",
-        optimizer = adam,
-        metrics = ["accuracy", "precision", "recall", AUC(name="auc")]
-    )
     return augmented

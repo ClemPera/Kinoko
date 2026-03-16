@@ -4,7 +4,6 @@ from keras.models import load_model
 from keras.optimizers import Adam
 from keras.callbacks import Callback, History, EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
-EPOCHS: int = 50
 
 def create_head(inputs: KerasTensor, pretrained_model_cls: KerasTensor) -> Model:
     """
@@ -48,7 +47,7 @@ def compile_model(model: Model) -> Model:
     return model
 
 
-def train(model: Model, train_ds: Dataset, val_ds: Dataset) -> History:
+def train(model: Model, train_ds: Dataset, val_ds: Dataset, epochs: int) -> History:
     """
     Train a model with early stopping, LR scheduling, and checkpointing.
 
@@ -89,7 +88,7 @@ def train(model: Model, train_ds: Dataset, val_ds: Dataset) -> History:
     history: History = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=EPOCHS,
+        epochs=epochs,
         callbacks=callbacks
     )
 
@@ -106,6 +105,5 @@ def load_model_from_checkpoint(checkpoint_path: str) -> Model:
     Returns:
         The restored Model.
     """
-    model: Model = load_model(checkpoint_path) # type: ignore
+    model: Model = load_model(checkpoint_path)  # type: ignore
     return model
-

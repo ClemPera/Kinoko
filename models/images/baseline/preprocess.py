@@ -24,4 +24,5 @@ def augment_edible(edible_dir="data/image_dataset/edible"):
     paths = list(Path(edible_dir).rglob("*.png"))
 
     for p in paths:
-        save_img(str(p.parent / f"aug_{p.name}"), np.fliplr(img_to_array(load_img(p))))
+        save_img(str(p.parent / f"aug_{p.name}"),
+                 np.fliplr(img_to_array(load_img(p))))

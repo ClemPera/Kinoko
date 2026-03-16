@@ -1,6 +1,7 @@
 from keras import Input, layers, KerasTensor
 from keras_hub.models import DINOV2Backbone
 
+
 def get_cls_dinov2(img_shape=(512, 512, 3)) -> tuple[KerasTensor, KerasTensor]:
     """
     Build a frozen DINOv2 backbone and return its CLS token output.
@@ -17,7 +18,7 @@ def get_cls_dinov2(img_shape=(512, 512, 3)) -> tuple[KerasTensor, KerasTensor]:
     backbone: DINOV2Backbone = DINOV2Backbone.from_preset("dinov2_base")
     backbone.trainable = False
 
-    inputs: KerasTensor = Input(shape=img_shape) # type: ignore
+    inputs: KerasTensor = Input(shape=img_shape)  # type: ignore
     x: KerasTensor = layers.Rescaling(1 / 255.0)(inputs)
     x = layers.Normalization(
         mean=[0.485, 0.456, 0.406],
