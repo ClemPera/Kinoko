@@ -1,0 +1,11 @@
+numpy
+pandas
+tensorflow
+xgboost
+scikit-learn
+keras_hub==0.26.0
+keras
+uvicorn
+fastapi
+matplotlib
+python-multipart

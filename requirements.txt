@@ -17,4 +17,3 @@ streamlit
 uvicorn
 fastapi
 python-multipart
-colorama

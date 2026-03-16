@@ -8,9 +8,12 @@ from datetime import datetime
 from xgboost import XGBClassifier
 from keras import Model
 
-from models.tabular import XGBoost
-from models.images import dinov2
-from models.images import baseline
+from models.tabular.XGBoost.registry import load_model as XGBoost_load_model
+from models.tabular.XGBoost.model import predict as XGBoost_predict
+from models.images.dinov2.model import load_model_from_checkpoint as dinov2_load_model_
+from models.images.dinov2.inference import predict as dinov2_predict
+from models.images.baseline.utils import load_keras_model as baseline_load_model
+from models.images.baseline.evaluate import prediction as baseline_prediction
 from .utils import *
 
 app = FastAPI()
@@ -69,10 +72,10 @@ def predict_tab(
     }])
 
     if model_XGBoost is None:
-        model_XGBoost = XGBoost.registry.load_model("models/tabular/XGBoost") # type: ignore
-        assert model_XGBoost != None
+        model_XGBoost = XGBoost_load_model("models/tabular/XGBoost") # type: ignore
+        assert model_XGBoost is not None
 
-    result = XGBoost.model.predict(model_XGBoost, data)
+    result = XGBoost_predict(model_XGBoost, data)
 
     return result
 
@@ -99,23 +102,23 @@ def predict_img(
     match model:
         case "dinov2_baseline":
             if model_dinov2 is None:
-                model_dinov2 = dinov2.model.load_model_from_checkpoint(
+                model_dinov2 = dinov2_load_model_(
                     "models/images/dinov2/checkpoints/dinov2.keras")
-                assert model_dinov2 != None
+                assert model_dinov2 is not None
 
-            class_names, probability = dinov2.inference.predict(model_dinov2, image)
+            class_names, probability = dinov2_predict(model_dinov2, image)
 
         case "baseline":
             if model_baseline is None:
-                model_baseline = baseline.utils.load_keras_model(
+                model_baseline = baseline_load_model(
                     "model_1.keras")
-                model_baseline_aug = baseline.utils.load_keras_model(
+                model_baseline_aug = baseline_load_model(
                     "augmented_1.keras")
-                assert model_baseline != None
-                assert model_baseline_aug != None
+                assert model_baseline is not None
+                assert model_baseline_aug is not None
 
             df_image = pil_to_dataset(image)
-            df_proba_results = baseline.evaluate.prediction(
+            df_proba_results = baseline_prediction(
                 model_baseline,
                 model_baseline_aug,
                 df_image,
@@ -123,11 +126,13 @@ def predict_img(
                 datetime.now().strftime("%d%m%Y_%H%M%S")
             )
 
-            probability: dict = {"Baseline": str(df_proba_results["Baseline_proba"]),
-                                 "Augmented": str(df_proba_results["Augmented_proba"])}
+            print(df_proba_results["Baseline_proba"].iloc[0])
 
-            class_names: dict = {"Baseline": str(df_proba_results["Baseline_class"]),
-                                 "Augmented:": str(df_proba_results["Augmented_class"])}
+            probability: dict = {"Baseline": str(df_proba_results["Baseline_proba"].iloc[0]),
+                                 "Augmented": str(df_proba_results["Augmented_proba"].iloc[0])}
+
+            class_names: dict = {"Baseline": str(df_proba_results["Baseline_class"].iloc[0]),
+                                 "Augmented:": str(df_proba_results["Augmented_class"].iloc[0])}
         case _:
             raise HTTPException(
                 status_code=400, detail="The model selected doesn't exist")

@@ -1,7 +1,6 @@
 import glob
 import os
 import time
-from colorama import Fore, Style
 
 import joblib
 from xgboost import XGBClassifier
@@ -32,7 +31,7 @@ def load_model(path="ml_logic"):
     Load the model
     - works for different models
     """
-    print(Fore.BLUE + "\nLoad latest model from local registry..." + Style.RESET_ALL)
+    print("\nLoad latest model from local registry...")
 
     local_model_directory = os.path.join(path, "models")
     local_model_paths = glob.glob(f"{local_model_directory}/*")
@@ -42,7 +41,7 @@ def load_model(path="ml_logic"):
 
     most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
-    print(Fore.BLUE + "\nLoad latest model from disk..." + Style.RESET_ALL)
+    print("\nLoad latest model from disk...")
 
     if most_recent_model_path_on_disk.endswith(".keras") or most_recent_model_path_on_disk.endswith(".h5"):
         model = models.load_model(most_recent_model_path_on_disk)
