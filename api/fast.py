@@ -38,15 +38,15 @@ app.add_middleware(
 
 @app.get("/predict_tab")
 def predict_tab(
-    cap_shape: str|None = None,
-    cap_color: str|None = None,
-    does_bruise_or_bleed: str|None = None,
-    gill_attachment: str|None = None,
-    gill_color: str|None = None,
-    stem_color: str|None = None,
-    has_ring: str|None = None,
-    habitat: str|None = None,
-    season: str|None = None
+    cap_shape: str | None = None,
+    cap_color: str | None = None,
+    does_bruise_or_bleed: str | None = None,
+    gill_attachment: str | None = None,
+    gill_color: str | None = None,
+    stem_color: str | None = None,
+    has_ring: str | None = None,
+    habitat: str | None = None,
+    season: str | None = None
 ):
     """
     Runs the predict on the tabular model with tabular inputs
@@ -72,7 +72,8 @@ def predict_tab(
     }])
 
     if model_XGBoost is None:
-        model_XGBoost = XGBoost_load_model("models/tabular/XGBoost") # type: ignore
+        model_XGBoost = XGBoost_load_model(
+            "models/tabular/XGBoost")  # type: ignore
         assert model_XGBoost is not None
 
     is_poisonous, probability = XGBoost_predict(model_XGBoost, data)
@@ -113,21 +114,21 @@ def predict_img(
 
         case "baseline":
             if model_baseline is None:
-                model_baseline = baseline_load_model(
-                    "model_1.keras")
+                model_baseline = baseline_load_model("model_1.keras")
                 assert model_baseline is not None
 
             df_image = pil_to_dataset(image)
-            is_poisonous, probability = baseline_prediction(model_baseline, df_image)
+            is_poisonous, probability = baseline_prediction(
+                model_baseline, df_image)
 
         case "baseline_aug":
             if model_baseline_aug is None:
-                model_baseline_aug = baseline_load_model(
-                    "augmented_1.keras")
+                model_baseline_aug = baseline_load_model("augmented_1.keras")
                 assert model_baseline_aug is not None
-                
+
             df_image = pil_to_dataset(image)
-            is_poisonous, probability = baseline_prediction(model_baseline_aug, df_image)
+            is_poisonous, probability = baseline_prediction(
+                model_baseline_aug, df_image)
 
         case _:
             raise HTTPException(
@@ -153,15 +154,15 @@ def models():
 @app.post("/predict_all")
 def predict_all(
     file: UploadFile,
-    cap_shape: str|None = None,
-    cap_color: str|None = None,
-    does_bruise_or_bleed: str|None = None,
-    gill_attachment: str|None = None,
-    gill_color: str|None = None,
-    stem_color: str|None = None,
-    has_ring: str|None = None,
-    habitat: str|None = None,
-    season: str|None = None,
+    cap_shape: str | None = None,
+    cap_color: str | None = None,
+    does_bruise_or_bleed: str | None = None,
+    gill_attachment: str | None = None,
+    gill_color: str | None = None,
+    stem_color: str | None = None,
+    has_ring: str | None = None,
+    habitat: str | None = None,
+    season: str | None = None,
 ):
     """
     Run the predictions for every models available
