@@ -35,15 +35,27 @@ def train_model(X_train,
     return pipe_model
 
 
-def predict(model, data_test):
+def predict(model, data) -> tuple[bool, float]:
     """
     Prediction function, gives out the predicted class and the associated prob
     - model : model trained before
-    - data_test : can be a single data to test, or a dataframe with xx rows
+    - data : can be a single data to predict
     """
     #Predict and prob
-    pred = model.predict(data_test)
-    proba = model.predict_proba(data_test)
+    pred = model.predict(data)[0]
+    proba = model.predict_proba(data)
+
+    return bool(pred), float(proba[0][pred])
+
+def predict_multiple(model, data):
+    """
+    Prediction function, gives out the predicted class and the associated prob
+    - model : model trained before
+    - data : can be a single data to predict, or a dataframe with xx rows
+    """
+    #Predict and prob
+    pred = model.predict(data)
+    proba = model.predict_proba(data)
 
     labels = {0: "Edible", 1: "Poisonous"}
 

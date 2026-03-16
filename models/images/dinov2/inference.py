@@ -19,7 +19,7 @@ def test(model: Model, test_ds: Dataset) -> list[float]:
     print(f"loss: {results[0]}\naccuracy: {results[1]}\nrecall: {results[2]}\nprecision: {results[3]}")
     return results
 
-def predict(model: Model, image: ImageFile.ImageFile, image_sizes=(518, 518)) -> tuple[str, float]:
+def predict(model: Model, image: ImageFile.ImageFile, image_sizes=(518, 518)) -> tuple[bool, float]:
     """
     Run inference on a single image and return the predicted class and confidence.
 
@@ -41,10 +41,10 @@ def predict(model: Model, image: ImageFile.ImageFile, image_sizes=(518, 518)) ->
     img_array = np.expand_dims(img_array, axis=0)  # (1, IMG_SIZE, IMG_SIZE, 3)
 
     confidence: float = float(model.predict(img_array)[0][0])
-    predicted_class: str = "1" if confidence >= 0.5 else "0"
+    predicted_class = confidence >= 0.5
     
     # Show the right confidence when it's edible
-    if predicted_class == "0":
+    if predicted_class == False:
         confidence = 1 - confidence
 
     return predicted_class, confidence

@@ -75,9 +75,12 @@ def predict_tab(
         model_XGBoost = XGBoost_load_model("models/tabular/XGBoost") # type: ignore
         assert model_XGBoost is not None
 
-    result = XGBoost_predict(model_XGBoost, data)
+    is_poisonous, probability = XGBoost_predict(model_XGBoost, data)
 
-    return result
+    return {
+        "probability": probability,
+        "poisonous": is_poisonous
+    }
 
 
 @app.post("/predict_img")
@@ -106,38 +109,33 @@ def predict_img(
                     "models/images/dinov2/checkpoints/dinov2.keras")
                 assert model_dinov2 is not None
 
-            class_names, probability = dinov2_predict(model_dinov2, image)
+            is_poisonous, probability = dinov2_predict(model_dinov2, image)
 
         case "baseline":
             if model_baseline is None:
                 model_baseline = baseline_load_model(
                     "model_1.keras")
-                model_baseline_aug = baseline_load_model(
-                    "augmented_1.keras")
                 assert model_baseline is not None
-                assert model_baseline_aug is not None
 
             df_image = pil_to_dataset(image)
-            df_proba_results = baseline_prediction(
-                model_baseline,
-                model_baseline_aug,
-                df_image,
-                ['edible', 'poisonous'],
-                datetime.now().strftime("%d%m%Y_%H%M%S")
-            )
+            is_poisonous, probability = baseline_prediction(model_baseline, df_image)
 
-            probability: dict = {"Baseline": str(df_proba_results["Baseline_proba"].iloc[0]),
-                                 "Augmented": str(df_proba_results["Augmented_proba"].iloc[0])}
+        case "baseline_aug":
+            if model_baseline_aug is None:
+                model_baseline_aug = baseline_load_model(
+                    "augmented_1.keras")
+                assert model_baseline_aug is not None
+                
+            df_image = pil_to_dataset(image)
+            is_poisonous, probability = baseline_prediction(model_baseline_aug, df_image)
 
-            class_names: dict = {"Baseline": str(df_proba_results["Baseline_class"].iloc[0]),
-                                 "Augmented:": str(df_proba_results["Augmented_class"].iloc[0])}
         case _:
             raise HTTPException(
                 status_code=400, detail="The model selected doesn't exist")
 
     return {
         "probability": probability,
-        "class": class_names
+        "poisonous": is_poisonous
     }
 
 
@@ -147,7 +145,7 @@ def models():
     Returns the list of models available
     """
     return {
-        "img_models": ["dinov2_baseline", "baseline"],
+        "img_models": ["dinov2_baseline", "baseline", "baseline_aug"],
         "tab_models": ["XGboost"]
     }
 
