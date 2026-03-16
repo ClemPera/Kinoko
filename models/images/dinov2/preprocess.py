@@ -1,10 +1,12 @@
 from tensorflow.keras.utils import image_dataset_from_directory
 from tensorflow.data import AUTOTUNE, Dataset
 
-BATCH_SIZE: int = 32
 SEED: int = 42
 
-def train_test_split(image_dir: str, image_sizes=(518, 518)) -> tuple[Dataset, Dataset, Dataset]:
+
+def train_test_split(image_dir: str,
+                     image_sizes=(518, 518),
+                     batch_size=32) -> tuple[Dataset, Dataset, Dataset]:
     """
     Split an image directory into train, validation, and test datasets.
 
@@ -17,6 +19,7 @@ def train_test_split(image_dir: str, image_sizes=(518, 518)) -> tuple[Dataset, D
     Returns:
         A tuple of (train_ds, test_ds, val_ds) as prefetched tf.data.Dataset objects.
     """
+
     train_ds: Dataset = image_dataset_from_directory(
         image_dir,
         labels="inferred",
@@ -25,8 +28,9 @@ def train_test_split(image_dir: str, image_sizes=(518, 518)) -> tuple[Dataset, D
         subset="training",
         seed=SEED,
         image_size=image_sizes,
-        batch_size=BATCH_SIZE
+        batch_size=batch_size
     )
+
     test_val_ds: Dataset = image_dataset_from_directory(
         image_dir,
         labels="inferred",
@@ -35,7 +39,7 @@ def train_test_split(image_dir: str, image_sizes=(518, 518)) -> tuple[Dataset, D
         subset="validation",
         seed=SEED,
         image_size=image_sizes,
-        batch_size=BATCH_SIZE
+        batch_size=batch_size
     )
 
     half_test_val_size: int = int(len(test_val_ds) / 2)
@@ -47,4 +51,3 @@ def train_test_split(image_dir: str, image_sizes=(518, 518)) -> tuple[Dataset, D
     val_ds = val_ds.prefetch(AUTOTUNE)
 
     return (train_ds, test_ds, val_ds)
-

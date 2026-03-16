@@ -5,11 +5,15 @@ import time
 import joblib
 from xgboost import XGBClassifier
 from keras import Model, models
+from sklearn.pipeline import Pipeline
+
 
 def save_model(model, path="ml_logic"):
     """
     Save the model with timestamp
-    - works for keras or other models
+
+    Args:
+        - model: works for keras or other models
     """
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -25,11 +29,12 @@ def save_model(model, path="ml_logic"):
     print(f"✅ Model saved at {model_path}")
 
 
-
 def load_model(path="ml_logic"):
     """
     Load the model
     - works for different models
+    args: 
+        - path: model folder path
     """
     print("\nLoad latest model from local registry...")
 

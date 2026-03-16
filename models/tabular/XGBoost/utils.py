@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def add_noise_to_dataset(df, columns=None, noise_fraction=0.12, possible_values_dict=None):
     """
     Ajoute du bruit à plusieurs colonnes d'un DataFrame d'un seul coup.
@@ -33,7 +34,8 @@ def add_noise_to_dataset(df, columns=None, noise_fraction=0.12, possible_values_
             continue
 
         # 2. Sélectionner les lignes à modifier (indices au hasard)
-        noise_indices = np.random.choice(df_noisy.index, size=n_noise, replace=False)
+        noise_indices = np.random.choice(
+            df_noisy.index, size=n_noise, replace=False)
 
         # 3. Générer les nouvelles valeurs aléatoires parmi les choix possibles pour cette colonne
         random_new_values = np.random.choice(possible_values, size=n_noise)

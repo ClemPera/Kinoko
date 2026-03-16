@@ -4,6 +4,7 @@ from tensorflow.data import Dataset
 from PIL import ImageFile
 import numpy as np
 
+
 def test(model: Model, test_ds: Dataset) -> list[float]:
     """
     Evaluate a model on the test dataset and print the results.
@@ -16,8 +17,10 @@ def test(model: Model, test_ds: Dataset) -> list[float]:
         A list of scalar metric values: [loss, accuracy, recall, precision].
     """
     results: list[float] = model.evaluate(test_ds)
-    print(f"loss: {results[0]}\naccuracy: {results[1]}\nrecall: {results[2]}\nprecision: {results[3]}")
+    print(
+        f"loss: {results[0]}\naccuracy: {results[1]}\nrecall: {results[2]}\nprecision: {results[3]}")
     return results
+
 
 def predict(model: Model, image: ImageFile.ImageFile, image_sizes=(518, 518)) -> tuple[bool, float]:
     """
@@ -42,9 +45,9 @@ def predict(model: Model, image: ImageFile.ImageFile, image_sizes=(518, 518)) ->
 
     confidence: float = float(model.predict(img_array)[0][0])
     predicted_class = confidence >= 0.5
-    
+
     # Show the right confidence when it's edible
-    if predicted_class == False:
+    if predicted_class is False:
         confidence = 1 - confidence
 
     return predicted_class, confidence
