@@ -1,18 +1,21 @@
 import pandas as pd
-from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import make_pipeline
-
-from XGBoost.data import get_data, get_data_reduced
-from XGBoost.preprocess import preprocess_features, tts
-from utils import add_noise_to_dataset
+from torch import threshold
 
 def define_model():
     """
     Define the model to perform on tabular data
+    Model found thanks to AutoML (Flaml), better than with RandomizedSearch on XGBoost
     """
-    model = XGBClassifier(objective="binary:logistic",
-                          eval_metric="logloss",
-                          random_state=3)
+    model = RandomForestClassifier(
+        n_estimators=125,
+        max_features=0.28106927285321465,
+        max_leaf_nodes=3448,  # ⚠️ max_leaves → max_leaf_nodes en sklearn
+        criterion='gini',
+        n_jobs=-1,
+        random_state=3)
+
     return model
 
 def train_model(X_train,
@@ -44,8 +47,8 @@ def predict(model, data_test):
     - data_test : can be a single data to test, or a dataframe with xx rows
     """
     #Predict and prob
-    pred = model.predict(data_test)
     proba = model.predict_proba(data_test)
+    pred = (proba[:, 1] >= threshold).astype(int)
 
     labels = {0: "Edible", 1: "Poisonous"}
 
