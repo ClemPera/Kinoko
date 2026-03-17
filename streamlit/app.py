@@ -112,11 +112,7 @@ st.markdown("""
 # ----------------------------------------------------------
 
 # ░░ IMG ░░
-DATA_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/data/image_dataset")
-
-# Without aug img
-# edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png") if not p.name.startswith("aug_")]
-# poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png") if not p.name.startswith("aug_")]
+DATA_DIR = Path("../data/image_dataset")
 
 # with aug img
 edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
@@ -125,17 +121,11 @@ poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 # ░░ MODEL BASELINE + AUGMENTED ░░
 results_path = Path("logs/.csv")
 
-# ░░ KERAS MODEL ░░
-MODELS_DIR = Path("models/")
-keras_files = list(MODELS_DIR.glob("*.keras"))
-
-checkpoint_file = Path("checkpoints/dinov2.keras")
-
 # ░░ LOGS  ░░
-LOG_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/logs")
+LOG_DIR = Path("../models/images/baseline/logs")
 
 # ░░ RESULTS  ░░
-RESULTS_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/results")
+RESULTS_DIR = Path("../models/images/baseline/results")
 
 # ----------------------------------------------------------
 # 📄 PAGE 1 — PROJECT OVERVIEW
@@ -655,13 +645,13 @@ elif selected == "Prediction":
     with col_a1:
         cap_shape = st.selectbox("🔘 Cap Shape (🚨required)", options=[default_option] + list(cap_shape_map.keys()))
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the cap shapes!"):
-            st.image("assets/cap_shapes.png", width="stretch")
+            st.image("../assets/cap_shapes.png", width="stretch")
         cap_color = st.selectbox("🎨 Cap Color (🚨required)", options=color_options)
         stem_color = st.selectbox("🖍️ Stem Color (🚨required)", options=other_color_options)
         gill_color = st.selectbox("🌈 Gill Color (🚨required)", options=other_color_options)
         gill_attachment = st.selectbox("🔗 Gill Attachment (🚨required)", options=[default_option] + list(gill_attachment_map.keys()),)
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the gill attachments!"):
-            st.image("assets/gills_attachments.png", width="stretch")
+            st.image("../assets/gills_attachments.png", width="stretch")
 
     with col_a2:
         habitat = st.selectbox("🌿 Habitat", options=habitat_options, help=habitat_help)
@@ -760,7 +750,7 @@ elif selected == "Prediction":
                 # placeholder.empty()
                 if response.status_code == 200:
                     res = response.json()
-                    # show_result(res[0].get('label'), res[0].get('prob'))
+                    placeholder.empty()
                     show_result(res.get('poisonous'), res.get('probability'))
                 else:
                     st.error(f"🚨 API Error {response.status_code}")
@@ -814,6 +804,7 @@ elif selected == "Prediction":
 
                 if response.status_code == 200:
                     data = response.json()
+                    placeholder.empty()
 
                     st.subheader("📊 Tabular models")
                     for model_name, res in data.get("tab_models", {}).items():
@@ -831,8 +822,9 @@ elif selected == "Prediction":
                             res.get("probability")
                         )
                 else:
+                    placeholder.empty()
                     st.error(f"🚨 API Error: {response.status_code}")
-
+                    placeholder.empty()
             except Exception as e:
                 placeholder.empty()
                 st.error(f'❌🕵 Cannot reach API: {e}')
