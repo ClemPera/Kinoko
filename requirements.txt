@@ -18,3 +18,5 @@ uvicorn
 fastapi
 python-multipart
 protobuf==3.20.3
+streamlit>=1.31.0
+altair>=5.0.0
