@@ -590,13 +590,13 @@ elif selected == "Prediction":
     with col_a1:
         cap_shape = st.selectbox("🔘 Cap Shape (🚨required)", options=[default_option] + list(cap_shape_map.keys()))
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the cap shapes!"):
-            st.image("../stremlit/assets/cap_shapes.png", width="stretch")
+            st.image("assets/cap_shapes.png", width="stretch")
         cap_color = st.selectbox("🎨 Cap Color (🚨required)", options=color_options)
         stem_color = st.selectbox("🖍️ Stem Color (🚨required)", options=other_color_options)
         gill_color = st.selectbox("🌈 Gill Color (🚨required)", options=other_color_options)
         gill_attachment = st.selectbox("🔗 Gill Attachment (🚨required)", options=[default_option] + list(gill_attachment_map.keys()),)
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the gill attachments!"):
-            st.image("../streamlit/assets/gills_attachments.png", width="stretch")
+            st.image("assets/gills_attachments.png", width="stretch")
 
     with col_a2:
         habitat = st.selectbox("🌿 Habitat", options=habitat_options, help=habitat_help)
@@ -604,7 +604,7 @@ elif selected == "Prediction":
         has_ring = st.selectbox("💍 Ring ", options= [default_option] + list(has_ring_map.keys()))
         does_bruise_or_bleed = st.selectbox("🩸 Bruises or Bleeds?", options= [default_option] + list(does_bruise_or_bleed_map.keys()), help=bruise_bleed_help)
 
-    # ░░ Image Upload ░░
+    # ░░ IMAGE UPLOAD ░░
         st.divider()
         st.markdown("📸 **Upload a photo** *(optional for tabular predict — enables image models)*")
         uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "heic"])
