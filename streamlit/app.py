@@ -100,20 +100,20 @@ st.markdown("""
 # ----------------------------------------------------------
 
 # ░░ IMG ░░
-DATA_DIR = Path("../data/image_dataset")
+DATA_DIR = Path("/mount/src/kinoko/data/image_dataset")
 
 # with aug img
 edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
 poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 
 # ░░ MODEL BASELINE + AUGMENTED ░░
-results_path = Path("../models/images/baseline/logs/.csv")
+results_path = Path("/mount/src/kinoko/models/images/baseline/logs/.csv")
 
 # ░░ LOGS  ░░
-LOG_DIR = Path("../models/images/baseline/logs")
+LOG_DIR = Path("/mount/src/kinoko/models/images/baseline/logs")
 
 # ░░ RESULTS  ░░
-RESULTS_DIR = Path("../models/images/baseline/results")
+RESULTS_DIR = Path("/mount/src/kinoko/models/images/baseline/results")
 
 # ----------------------------------------------------------
 # 📄 PAGE 1 — PROJECT OVERVIEW
@@ -298,10 +298,6 @@ elif selected == "Data Analysis":
 
         else:
             st.warning("No probability file found.")
-
-        # st.caption("Select the probability results you want to view based on the date 📅")
-        # selected_file = st.selectbox("Select run", probability_files)
-        # df_prob = pd.read_csv(selected_file)
 
     with tab2:
         st.subheader("⚖️ Val Comparison: Baseline model vs Augmented model")
@@ -590,13 +586,13 @@ elif selected == "Prediction":
     with col_a1:
         cap_shape = st.selectbox("🔘 Cap Shape (🚨required)", options=[default_option] + list(cap_shape_map.keys()))
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the cap shapes!"):
-            st.image("assets/cap_shapes.png", width="stretch")
+            st.image("/mount/src/kinoko/streamlit/assets/cap_shapes.png", width="stretch")
         cap_color = st.selectbox("🎨 Cap Color (🚨required)", options=color_options)
         stem_color = st.selectbox("🖍️ Stem Color (🚨required)", options=other_color_options)
         gill_color = st.selectbox("🌈 Gill Color (🚨required)", options=other_color_options)
         gill_attachment = st.selectbox("🔗 Gill Attachment (🚨required)", options=[default_option] + list(gill_attachment_map.keys()),)
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the gill attachments!"):
-            st.image("assets/gills_attachments.png", width="stretch")
+            st.image("/mount/src/kinoko/streamlit/assets/gills_attachments.png", width="stretch")
 
     with col_a2:
         habitat = st.selectbox("🌿 Habitat", options=habitat_options, help=habitat_help)
