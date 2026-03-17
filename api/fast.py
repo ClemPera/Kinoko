@@ -147,7 +147,7 @@ def models():
     """
     return {
         "img_models": ["dinov2_baseline", "baseline", "baseline_aug"],
-        "tab_models": ["XGboost"]
+        "tab_models": ["tabular"]
     }
 
 
