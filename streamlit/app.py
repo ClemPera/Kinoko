@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ----------------------------------------------------------
 # 🚛 IMPORTS
 # ----------------------------------------------------------
@@ -25,38 +24,16 @@ from models.images.dinov2.preprocess import train_test_split
 
 # --- API ---
 import requests
-=======
-import streamlit as st
-import requests
-import pandas as pd
-import numpy as np
-# import pydeck as pdk
-import time
-import json
-import random
-import keras
-
-# from streamlit_lottie import st_lottie
-# from streamlit_elements import Elements
-
-import tensorflow as tf
-from pathlib import Path
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
 # ----------------------------------------------------------
 # ⚙️ STREAMLIT CONFIGURATION
 # ----------------------------------------------------------
-<<<<<<< HEAD
-
-=======
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 st.set_page_config(
     page_title="🍄 Kinoko (きのこ) 🍄 - Online Batch #2207",
     page_icon="🍄🍄‍🟫",
     layout="wide"
 )
 
-<<<<<<< HEAD
 # ░░ Navigation ░░
 pages = ["Project", "Data Exploration", "Data Analysis", "Modeling", "Prediction"]
 icons = ["book", "search", "bar-chart", "person-lines-fill", "rocket"]
@@ -105,23 +82,10 @@ selected = option_menu(
     orientation="horizontal",
     styles=styles
 )
-=======
-# Sidebar navigation
-st.sidebar.title("Navigation")
-pages = [
-    ":material/assignment: Project",
-    ":material/search: Data Exploration",
-    ":material/scatter_plot: Data Analysis",
-    ":material/psychology: Modeling",
-    ":material/rocket_launch: Prediction"
-]
-page = st.sidebar.radio("Go to:", pages)
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
 # ----------------------------------------------------------
 # 🎨 STYLING — Hover, Highlights, Transitions
 # ----------------------------------------------------------
-<<<<<<< HEAD
 
 st.markdown("""
             <style>
@@ -144,28 +108,6 @@ st.markdown("""
             </style>
             """, unsafe_allow_html=True
 )
-=======
-st.markdown("""
-<style>
-section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-  background: rgba(90, 132, 255, 0.15);
-  border-radius: 10px;
-  padding: 6px 8px;
-}
-section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
-  font-weight: 700;
-}
-.stButton > button {
-  border-radius: 10px;
-  transition: transform .06s ease, box-shadow .12s ease, background-color .12s ease;
-}
-.stButton > button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0,0,0,.18);
-}
-</style>
-""", unsafe_allow_html=True)
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
 # ----------------------------------------------------------
 # 📥 DATA LOADING
@@ -182,7 +124,6 @@ DATA_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/data/image_dataset")
 edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
 poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 
-<<<<<<< HEAD
 @st.cache_resource
 def load_datasets():
     return train_test_split(DATA_DIR)
@@ -203,33 +144,16 @@ LOG_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/l
 
 # ░░ RESULTS  ░░
 RESULTS_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/results")
-=======
-# ░░ MODEL BASELINE + AUGMENTED ░░
-results_path = Path("logs/.csv")
-
-# ░░ MODEL ░░
-
-# ░░ LOGS  ░░
-LOG_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/logs")
-
-# ░░ RESULTS  ░░
-RESULTS_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/results")
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
 # ----------------------------------------------------------
 # 📄 PAGE 1 — PROJECT OVERVIEW
 # ----------------------------------------------------------
 
-<<<<<<< HEAD
 if selected == "Project":
-=======
-if page == pages[0]:
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
     st.divider()
     st.header("🍄 :rainbow[Kinoko Lab] 🍄")
     st.divider()
     st.markdown("""
-<<<<<<< HEAD
                 **Kinoko Lab** is an end-to-end machine learning application designed to classify mushrooms as edible or poisonous.
 
                 The project combines:
@@ -287,33 +211,15 @@ if page == pages[0]:
                 """, unsafe_allow_html=True
     )
 
-=======
-    ### Project Overview
-    This project is a full **CNN-ready Streamlit app** including:
-    - Data exploration
-    - Visual analytics
-    - Modeling
-    - Real-time prediction
-
-    """)
-
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 # ----------------------------------------------------------
 # 🔍 PAGE 2 — DATA EXPLORATION
 # ----------------------------------------------------------
 
-<<<<<<< HEAD
 elif selected == "Data Exploration":
-=======
-elif page == pages[1]:
-    st.divider()
-    st.header("🍄 :rainbow[Data Exploration] 🍄")
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
     st.divider()
 
     # ░░ Nombre total par classe ░░
     st.subheader("📊 Dataset Overview")
-<<<<<<< HEAD
     st.markdown("""
                 This section explores the structure of the dataset.
 
@@ -333,28 +239,17 @@ elif page == pages[1]:
     st.info("""
             *These metrics summarize the number of images available in each class and random samples.*
     """)
-=======
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
     col1, col2, col3 = st.columns(3)
     col1.metric("🍄 Edible", len(edible_paths))
     col2.metric("☠️ Poisonous", len(poisonous_paths))
     col3.metric("📁 Total", len(edible_paths) + len(poisonous_paths))
 
-<<<<<<< HEAD
     # ░░ Random images ░░
     st.subheader("🖼️ Random Images")
     st.info("""
             *Display random samples to visually inspect differences between edible and poisonous mushrooms.*
     """)
     col_e, col_p = st.columns(2)
-=======
-    st.divider()
-
-    # ░░ Random images ░░
-    st.subheader("🖼️ Random Images")
-    col_e, col_p = st.columns(2)
-
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
     with col_e:
         st.markdown("**🍄 Edible**")
         for img_path in random.sample(edible_paths, 3):
@@ -369,12 +264,9 @@ elif page == pages[1]:
 
     # ░░ Distribution by species ░░
     st.subheader("📈 Distribution by Species")
-<<<<<<< HEAD
     st.info("""
             *These plots show how many images are available per species.*
     """)
-=======
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
     edible_species = pd.Series([p.parent.name for p in edible_paths]).value_counts().reset_index()
     edible_species.columns = ["species", "count"]
@@ -397,41 +289,16 @@ elif page == pages[1]:
 # 📄 PAGE 3 — DATA ANALYSIS
 # ----------------------------------------------------------
 
-<<<<<<< HEAD
 elif selected == "Data Analysis":
-=======
-elif page == pages[2]:
-    st.divider()
-    st.header("📊 :rainbow[Data Analysis]")
-    st.divider()
-
-    st.caption("**PLACEHOLDER**")
-
-# ----------------------------------------------------------
-# 📄 PAGE 4 — MODELING  (BASELINE vs FINE TUNING)
-# ----------------------------------------------------------
-
-elif page == pages[3]:
-    st.divider()
-    st.header("📊 :rainbow[Modeling Results]")
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
     st.divider()
 
     if results_path.exists():
         df_results = pd.read_csv(results_path)
         st.subheader("📊 Final Metrics Comparison")
 
-<<<<<<< HEAD
     tab1, tab2, tab3 = st.tabs(["📊 Probability", "📈 Validation", "📉 Metric"])
 
     with tab1:
-=======
-    tab1, tab2 = st.tabs(["📊 Probability", "📈 Validation"])
-
-    with tab1:
-
-        st.caption("Latest Run")
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
         probability_files = sorted(
             RESULTS_DIR.glob("baselines_probability_*.csv"),
             reverse=True
@@ -439,7 +306,6 @@ elif page == pages[3]:
 
         if probability_files:
             df_prob = pd.read_csv(probability_files[0])
-<<<<<<< HEAD
             st.subheader("Prediction Comparison for Each Sample")
             st.info(
                 "Use this table to identify disagreements between the two models. "
@@ -459,10 +325,6 @@ elif page == pages[3]:
                 """)
             st.dataframe(df_prob)
             st.warning("Latest Run")
-=======
-            st.subheader("Baseline Probability Results")
-            st.dataframe(df_prob)
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
         else:
             st.warning("No probability file found.")
@@ -472,7 +334,6 @@ elif page == pages[3]:
         df_prob = pd.read_csv(selected_file)
 
     with tab2:
-<<<<<<< HEAD
         st.subheader("⚖️ Val Comparison: Baseline model vs Augmented model")
         st.info("""
                 Validation metrics measure how well the model generalizes
@@ -525,52 +386,10 @@ elif page == pages[3]:
                 ("val_accuracy",  "📈 Validation Accuracy"),
             ]:
                 plot_metric(metric, label)
-=======
-
-        baseline_logs = sorted(
-            LOG_DIR.glob("baseline_history_*.csv"),
-            reverse=True
-        )
-
-        augmented_logs = sorted(
-            LOG_DIR.glob("augmented_history_*.csv"),
-            reverse=True
-        )
-
-        if baseline_logs and augmented_logs:
-
-            df_baseline = pd.read_csv(baseline_logs[0])
-            df_augmented = pd.read_csv(augmented_logs[0])
-
-            st.subheader("📈 Validation Loss")
-            st.line_chart(pd.DataFrame({
-                "Baseline": df_baseline["val_loss"],
-                "Augmented": df_augmented["val_loss"]
-            }))
-
-            st.subheader("📈 Validation Accuracy")
-            st.line_chart(pd.DataFrame({
-                "Baseline": df_baseline["val_accuracy"],
-                "Augmented": df_augmented["val_accuracy"]
-            }))
-
-            st.subheader("📈 Validation Recall")
-            st.line_chart(pd.DataFrame({
-                "Baseline": df_baseline["val_recall"],
-                "Augmented": df_augmented["val_recall"]
-            }))
-
-            st.subheader("📈 Validation AUC")
-            st.line_chart(pd.DataFrame({
-                "Baseline": df_baseline["val_auc"],
-                "Augmented": df_augmented["val_auc"]
-            }))
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
 
         else:
             st.warning("No training logs found yet.")
 
-<<<<<<< HEAD
     with tab3:
         st.subheader("⚖️ Metrics Comparison: Baseline model vs Augmented model")
         st.info("""
@@ -999,18 +818,3 @@ elif selected == "Prediction":
             except Exception as e:
                 placeholder.empty()
                 st.error(f'❌🕵 Cannot reach API: {e}')
-=======
-# ----------------------------------------------------------
-# 📄 PAGE 5 — PREDICTION
-# ----------------------------------------------------------
-#  upload image →  predict edible/poisonous + confidence score
-
-elif page == pages[4]:
-    st.divider()
-    st.header("🚀 Prediction")
-    st.divider()
-
-    st.caption("**Upload your 🍄‍🟫 mushroom 🍄‍🟫 and see what will happen... 😉**")
-
-    st.caption("**PLACEHOLDER**")
->>>>>>> c2c44b1ebc450a27f9c35e10753c6c016e98cdc2
