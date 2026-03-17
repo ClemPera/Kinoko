@@ -1,0 +1,91 @@
+import pandas as pd
+from xgboost import XGBClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.base import BaseEstimator
+
+from .data import get_data, get_data_reduced
+from .preprocess import preprocess_features, tts
+from .utils import add_noise_to_dataset
+
+
+def define_model() -> XGBClassifier:
+    """
+    Define the model to perform on tabular data
+
+    Returns:
+        Classifier model
+    """
+    model = XGBClassifier(objective="binary:logistic",
+                          eval_metric="logloss",
+                          random_state=3)
+    return model
+
+
+def train_model(X_train: pd.DataFrame,
+                y_train: pd.DataFrame,
+                pipeline: BaseEstimator) -> Pipeline:
+    """
+    Training the model
+
+    Args:
+        - X_train, y_train : from tts()
+        - pipeline: from preprocess_features()
+
+    Returns: Fitted pipeline
+    """
+    # call the function made before
+    model = define_model()
+
+    # Pipeline with data preprocessed and model
+    pipe_model = make_pipeline(pipeline, model)
+
+    # train model
+    pipe_model.fit(X_train, y_train)
+
+    return pipe_model
+
+
+def predict(model: Pipeline, data: pd.DataFrame) -> tuple[bool, float]:
+    """
+    Prediction function, gives out the predicted class and the associated prob
+    Args:
+        - model : model trained before
+        - data : can be a single data to predict
+
+    Returns: 
+        tuple of predicted class and probability
+    """
+    # Predict and prob
+    pred = model.predict(data)[0]
+    proba = model.predict_proba(data)
+
+    return bool(pred), float(proba[0][pred])
+
+
+def predict_multiple(model: Pipeline, data: pd.DataFrame):
+    """
+    Prediction function, gives out the predicted class and the associated prob
+    Args:
+        - model : model trained before
+        - data : can be a single data to predict
+
+    Returns: 
+        List of predicted labels and probabilities
+    """
+    # Predict and prob
+    pred = model.predict(data)
+    proba = model.predict_proba(data)
+
+    labels = {0: "Edible", 1: "Poisonous"}
+
+    res = []
+
+    for p, pr in zip(pred, proba):
+        prob = round(pr[p] * 100, 2)
+        res.append({
+            "labels": labels[p],
+            "prob": float(prob)
+        })
+
+    return res

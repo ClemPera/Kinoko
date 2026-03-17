@@ -1,0 +1,8 @@
+services:
+  kinoko_api:
+    image: kinoko_api
+    ports:
+    - 8000:8080
+    restart: unless-stopped
+    environment:
+    - PORT=8080
