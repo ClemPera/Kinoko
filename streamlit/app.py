@@ -122,12 +122,6 @@ DATA_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/data/image_dataset")
 edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
 poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 
-@st.cache_resource
-def load_datasets():
-    return train_test_split(DATA_DIR)
-
-train_ds, test_ds, val_ds = load_datasets()
-
 # ░░ MODEL BASELINE + AUGMENTED ░░
 results_path = Path("logs/.csv")
 
@@ -356,33 +350,36 @@ elif selected == "Data Analysis":
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
 
-            def plot_metric(metric, label):
+            def plot_metric(metric):
                 fig = go.Figure()
+
                 fig.add_trace(go.Scatter(
                     y=df_baseline[metric],
                     name="Baseline",
                     line=dict(color=COLORS["Baseline"], width=2)
                 ))
+
                 fig.add_trace(go.Scatter(
                     y=df_augmented[metric],
                     name="Augmented",
                     line=dict(color=COLORS["Augmented"], width=2)
                 ))
-                fig.update_layout(
-                    title=label,
-                    xaxis_title="Epoch",
-                    yaxis_title=metric,
-                    height=300,
-                    margin=dict(t=40, b=20),
-                )
-                st.plotly_chart(fig, width="stretch")
 
-            metric_help = {
-                "val_loss": "Validation loss: measures how wrong the model predictions are. Lower is better.",
-                "val_recall": "Recall: ability to correctly identify positive cases. Important when missing positives is costly.",
-                "val_precision": "Precision: how many predicted positives are actually correct.",
-                "val_auc": "AUC: overall ability of the model to separate classes (0.5 = random, 1.0 = perfect).",
-                "val_accuracy": "Accuracy: percentage of correct predictions over total predictions."
+                fig.update_layout(
+                    xaxis_title="Epoch",
+                    yaxis_title=metric.replace("val_", "").capitalize(),
+                    height=300,
+                    margin=dict(t=10, b=20),
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            val_metric_help = {
+                "val_loss": "Validation loss: measures generalization error.",
+                "val_recall": "Validation recall: ability to detect positives on unseen data.",
+                "val_precision": "Validation precision: correctness of positive predictions.",
+                "val_auc": "Validation AUC: discrimination power on unseen data.",
+                "val_accuracy": "Validation accuracy: overall correctness on unseen data."
             }
 
             for metric, label in [
@@ -392,8 +389,8 @@ elif selected == "Data Analysis":
                 ("val_auc",       "📈 Validation AUC"),
                 ("val_accuracy",  "📈 Validation Accuracy"),
             ]:
-                st.markdown(f"### {label}", help=metric_help[metric])
-                plot_metric(metric, label)
+                st.subheader(label, help=val_metric_help[metric])
+                plot_metric(metric)
 
         else:
             st.warning("No training logs found yet.")
@@ -414,53 +411,6 @@ elif selected == "Data Analysis":
         augmented_logs = sorted(LOG_DIR.glob("augmented_history_*.csv"), reverse=True)
 
         COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518"}
-
-        # if baseline_logs and augmented_logs:
-        #     df_baseline = pd.read_csv(baseline_logs[0])
-        #     df_augmented = pd.read_csv(augmented_logs[0])
-
-            # def plot_metric_train(metric, label):
-            #     """
-            #     Plot a training metric comparaison between Baseline and Augmented models
-            #     """
-            #     fig = go.Figure()
-            #     fig.add_trace(go.Scatter(
-            #         y=df_baseline[metric],
-            #         name="Baseline",
-            #         line=dict(color=COLORS["Baseline"], width=2)
-            #     ))
-            #     fig.add_trace(go.Scatter(
-            #         y=df_augmented[metric],
-            #         name="Augmented",
-            #         line=dict(color=COLORS["Augmented"], width=2)
-            #     ))
-            #     fig.update_layout(
-            #         title=label,
-            #         xaxis_title="Epoch",
-            #         yaxis_title=metric,
-            #         height=300,
-            #         margin=dict(t=40, b=20),
-            #     )
-            #     st.plotly_chart(fig, width="stretch")
-
-            # train_metric_help = {
-            #     "loss": "Training loss: measures how wrong the model is on the training data. Should decrease steadily.",
-            #     "recall": "Training recall: ability to detect positive cases in the training set.",
-            #     "precision": "Training precision: proportion of predicted positives that are correct on training data.",
-            #     "auc": "Training AUC: model’s ability to separate classes on training data.",
-            #     "accuracy": "Training accuracy: percentage of correct predictions on training data."
-            # }
-
-            # for metric, label in [
-            #     ("loss",      "📉 Train Loss"),
-            #     ("recall",    "📉 Train Recall"),
-            #     ("precision", "📉 Train Precision"),
-            #     ("auc",       "📉 Train AUC"),
-            #     ("accuracy",  "📉 Train Accuracy"),
-            # ]:
-            #     st.subheader(label, help=train_metric_help[metric])
-            #     plot_metric_train(metric, label)
-
 
         if baseline_logs and augmented_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
