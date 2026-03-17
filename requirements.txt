@@ -17,3 +17,4 @@ streamlit
 uvicorn
 fastapi
 python-multipart
+protobuf==3.20.3
