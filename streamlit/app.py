@@ -17,10 +17,6 @@ import plotly.graph_objects as go
 
 # --- ML / Deep Learning ---
 import tensorflow as tf
-from keras.models import load_model
-
-# --- Local modules ---
-from models.images.dinov2.preprocess import train_test_split
 
 # --- API ---
 import requests
@@ -35,8 +31,10 @@ st.set_page_config(
 )
 
 # ░░ Navigation ░░
-pages = ["Project", "Data Exploration", "Data Analysis", "Modeling", "Prediction"]
-icons = ["book", "search", "bar-chart", "person-lines-fill", "rocket"]
+pages = ["Project", "Data Exploration", "Data Analysis", "Prediction"]
+icons = ["book", "search", "bar-chart", "rocket"]
+# pages = ["Project", "Data Exploration", "Data Analysis", "Modeling", "Prediction"]
+# icons = ["book", "search", "bar-chart", "person-lines-fill", "rocket"]
 
 # ░░ Sidebar Navigation ░░
 # with st.sidebar:
@@ -329,16 +327,15 @@ elif selected == "Data Analysis":
         else:
             st.warning("No probability file found.")
 
-        st.caption("Select the probability results you want to view based on the date 📅")
-        selected_file = st.selectbox("Select run", probability_files)
-        df_prob = pd.read_csv(selected_file)
+        # st.caption("Select the probability results you want to view based on the date 📅")
+        # selected_file = st.selectbox("Select run", probability_files)
+        # df_prob = pd.read_csv(selected_file)
 
     with tab2:
         st.subheader("⚖️ Val Comparison: Baseline model vs Augmented model")
         st.info("""
                 Validation metrics measure how well the model generalizes
-                to unseen data. A lower validation loss and stable AUC
-                indicate better robustness.
+                to unseen data.
         """)
         with st.expander("🧠 How to interpret validation curves?"):
             st.markdown("""
@@ -346,6 +343,8 @@ elif selected == "Data Analysis":
                         - Validation loss increasing while training improves → overfitting.
                         - Stable and high AUC → strong discrimination ability.
                         - Recall is critical when detecting poisonous mushrooms.
+                        - A lower validation loss and stable AUC
+                        indicate better robustness.
             """)
 
         baseline_logs = sorted(LOG_DIR.glob("baseline_history_*.csv"), reverse=True)
@@ -378,6 +377,14 @@ elif selected == "Data Analysis":
                 )
                 st.plotly_chart(fig, width="stretch")
 
+            metric_help = {
+                "val_loss": "Validation loss: measures how wrong the model predictions are. Lower is better.",
+                "val_recall": "Recall: ability to correctly identify positive cases. Important when missing positives is costly.",
+                "val_precision": "Precision: how many predicted positives are actually correct.",
+                "val_auc": "AUC: overall ability of the model to separate classes (0.5 = random, 1.0 = perfect).",
+                "val_accuracy": "Accuracy: percentage of correct predictions over total predictions."
+            }
+
             for metric, label in [
                 ("val_loss",      "📈 Validation Loss"),
                 ("val_recall",    "📈 Validation Recall"),
@@ -385,6 +392,7 @@ elif selected == "Data Analysis":
                 ("val_auc",       "📈 Validation AUC"),
                 ("val_accuracy",  "📈 Validation Accuracy"),
             ]:
+                st.markdown(f"### {label}", help=metric_help[metric])
                 plot_metric(metric, label)
 
         else:
@@ -407,84 +415,144 @@ elif selected == "Data Analysis":
 
         COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518"}
 
+        # if baseline_logs and augmented_logs:
+        #     df_baseline = pd.read_csv(baseline_logs[0])
+        #     df_augmented = pd.read_csv(augmented_logs[0])
+
+            # def plot_metric_train(metric, label):
+            #     """
+            #     Plot a training metric comparaison between Baseline and Augmented models
+            #     """
+            #     fig = go.Figure()
+            #     fig.add_trace(go.Scatter(
+            #         y=df_baseline[metric],
+            #         name="Baseline",
+            #         line=dict(color=COLORS["Baseline"], width=2)
+            #     ))
+            #     fig.add_trace(go.Scatter(
+            #         y=df_augmented[metric],
+            #         name="Augmented",
+            #         line=dict(color=COLORS["Augmented"], width=2)
+            #     ))
+            #     fig.update_layout(
+            #         title=label,
+            #         xaxis_title="Epoch",
+            #         yaxis_title=metric,
+            #         height=300,
+            #         margin=dict(t=40, b=20),
+            #     )
+            #     st.plotly_chart(fig, width="stretch")
+
+            # train_metric_help = {
+            #     "loss": "Training loss: measures how wrong the model is on the training data. Should decrease steadily.",
+            #     "recall": "Training recall: ability to detect positive cases in the training set.",
+            #     "precision": "Training precision: proportion of predicted positives that are correct on training data.",
+            #     "auc": "Training AUC: model’s ability to separate classes on training data.",
+            #     "accuracy": "Training accuracy: percentage of correct predictions on training data."
+            # }
+
+            # for metric, label in [
+            #     ("loss",      "📉 Train Loss"),
+            #     ("recall",    "📉 Train Recall"),
+            #     ("precision", "📉 Train Precision"),
+            #     ("auc",       "📉 Train AUC"),
+            #     ("accuracy",  "📉 Train Accuracy"),
+            # ]:
+            #     st.subheader(label, help=train_metric_help[metric])
+            #     plot_metric_train(metric, label)
+
+
         if baseline_logs and augmented_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
 
-            def plot_metric_train(metric, label):
-                """
-                Plot a training metric comparaison between Baseline and Augmented models
-                """
+            def plot_metric_train(metric):
                 fig = go.Figure()
+
                 fig.add_trace(go.Scatter(
                     y=df_baseline[metric],
                     name="Baseline",
                     line=dict(color=COLORS["Baseline"], width=2)
                 ))
+
                 fig.add_trace(go.Scatter(
                     y=df_augmented[metric],
                     name="Augmented",
                     line=dict(color=COLORS["Augmented"], width=2)
                 ))
+
                 fig.update_layout(
-                    title=label,
                     xaxis_title="Epoch",
-                    yaxis_title=metric,
+                    yaxis_title=metric.capitalize(),
                     height=300,
-                    margin=dict(t=40, b=20),
+                    margin=dict(t=10, b=20),
                 )
-                st.plotly_chart(fig, width="stretch")
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            train_metric_help = {
+                "loss": "Training loss: measures how wrong the model is on training data. Should decrease steadily.",
+                "recall": "Training recall: ability to detect positive cases in the training set.",
+                "precision": "Training precision: proportion of predicted positives that are correct on training data.",
+                "auc": "Training AUC: model’s ability to separate classes on training data.",
+                "accuracy": "Training accuracy: percentage of correct predictions on training data."
+            }
 
             for metric, label in [
+                ("loss",      "📉 Train Loss"),
                 ("recall",    "📉 Train Recall"),
                 ("precision", "📉 Train Precision"),
                 ("auc",       "📉 Train AUC"),
                 ("accuracy",  "📉 Train Accuracy"),
             ]:
-                plot_metric_train(metric, label)
+                st.subheader(label, help=train_metric_help[metric])
+                plot_metric_train(metric)
 
         else:
             st.warning("No training logs found yet.")
 
-# -------------------------------------------------------------
-# 📄 PAGE 4 — MODELING  (BASELINE vs AUGMENTED vs FINE TUNING)
-# -------------------------------------------------------------
+# # -------------------------------------------------------------
+# # 📄 PAGE 4 — MODELING  (BASELINE vs AUGMENTED vs FINE TUNING)
+# # -------------------------------------------------------------
 
-elif selected == "Modeling":
-    st.divider()
-    st.caption("MODELING (BASELINE ⚔️ AUGMENTED ⚔️ FINE TUNING)")
-    st.caption("**PLACEHOLDER**")
+# elif selected == "Modeling":
+#     st.divider()
+#     st.caption("MODELING (BASELINE ⚔️ AUGMENTED ⚔️ FINE TUNING)")
+#     st.caption("**PLACEHOLDER**")
 
-    results = []
+#     results = []
 
-    for model_file in keras_files:
-        model = load_model(model_file)
-        metrics = model.evaluate(test_ds, return_dict=True, verbose=0)
-        results.append({
-            "Model": model_file.stem,
-            "Loss": metrics["loss"],
-            "Accuracy": metrics["accuracy"],
-            "Recall": metrics["recall"],
-            "Precision": metrics["precision"]
-    })
+#     for model_file in keras_files:
+#         model = load_model(model_file)
+#         metrics = model.evaluate(test_ds, return_dict=True, verbose=0)
+#         results.append({
+#             "Model": model_file.stem,
+#             "Loss": metrics["loss"],
+#             "Accuracy": metrics["accuracy"],
+#             "Recall": metrics["recall"],
+#             "Precision": metrics["precision"]
+#         })
 
-    if checkpoint_file.exists():
-        dinov2_model = load_model(checkpoint_file)
-        dinov2_metrics = dinov2_model.evaluate(test_ds, return_dict=True, verbose=0)
-        results.append({
-            "Model": "DINOv2",
-            "Loss": dinov2_metrics["loss"],
-            "Accuracy": dinov2_metrics["accuracy"],
-            "Recall": dinov2_metrics["recall"],
-            "Precision": dinov2_metrics["precision"]
-    })
+#     if checkpoint_file.exists():
+#         dinov2_model = load_model(checkpoint_file)
+#         dinov2_metrics = dinov2_model.evaluate(test_ds, return_dict=True, verbose=0)
+#         results.append({
+#             "Model": "DINOv2",
+#             "Loss": dinov2_metrics["loss"],
+#             "Accuracy": dinov2_metrics["accuracy"],
+#             "Recall": dinov2_metrics["recall"],
+#             "Precision": dinov2_metrics["precision"]
+#         })
 
-    df_metrics = pd.DataFrame(results)
+#     if not results:
+#         st.warning("No models found. Check that `models/` contains `.keras` files or that `checkpoints/dinov2.keras` exists.")
+#     else:
+#         df_metrics = pd.DataFrame(results)
 
-    st.subheader("📊 Final Model Comparison")
-    st.dataframe(df_metrics)
+#         st.subheader("📊 Final Model Comparison")
+#         st.dataframe(df_metrics)
 
-    st.bar_chart(df_metrics.set_index("Model")[["Accuracy", "Recall", "Precision"]])
+#         st.bar_chart(df_metrics.set_index("Model")[["Accuracy", "Recall", "Precision"]])
 
 # ----------------------------------------------------------
 # 📄 PAGE 5 — PREDICTION
