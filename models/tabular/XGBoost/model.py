@@ -58,9 +58,9 @@ def predict(model: Pipeline, data: pd.DataFrame) -> tuple[bool, float]:
     # Predict and prob
 
     proba = model.predict_proba(data)
-    pred = (proba[:, 1] >= 0.35).astype(int)
+    pred = (proba[:, 1] >= 0.35).astype(int).tolist()
 
-    return bool(pred), float(proba[0][pred])
+    return bool(pred[0]), float(proba[:, pred[0]][0])
 
 
 def predict_multiple(model: Pipeline, data: pd.DataFrame):
