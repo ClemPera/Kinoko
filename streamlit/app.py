@@ -33,18 +33,6 @@ st.set_page_config(
 # ░░ Navigation ░░
 pages = ["Project", "Data Exploration", "Data Analysis", "Prediction"]
 icons = ["book", "search", "bar-chart", "rocket"]
-# pages = ["Project", "Data Exploration", "Data Analysis", "Modeling", "Prediction"]
-# icons = ["book", "search", "bar-chart", "person-lines-fill", "rocket"]
-
-# ░░ Sidebar Navigation ░░
-# with st.sidebar:
-    # selected = option_menu(
-    #     menu_title=None,
-    #     options=pages,
-    #     icons=icons,
-    #     menu_icon="cast",
-    #     default_index=0,
-    # )
 
 
 styles = {
@@ -112,30 +100,20 @@ st.markdown("""
 # ----------------------------------------------------------
 
 # ░░ IMG ░░
-DATA_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/data/image_dataset")
-
-# Without aug img
-# edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png") if not p.name.startswith("aug_")]
-# poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png") if not p.name.startswith("aug_")]
+DATA_DIR = Path("../data/image_dataset")
 
 # with aug img
 edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
 poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 
 # ░░ MODEL BASELINE + AUGMENTED ░░
-results_path = Path("logs/.csv")
-
-# ░░ KERAS MODEL ░░
-MODELS_DIR = Path("models/")
-keras_files = list(MODELS_DIR.glob("*.keras"))
-
-checkpoint_file = Path("checkpoints/dinov2.keras")
+results_path = Path("../models/images/baseline/logs/.csv")
 
 # ░░ LOGS  ░░
-LOG_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/logs")
+LOG_DIR = Path("../models/images/baseline/logs")
 
 # ░░ RESULTS  ░░
-RESULTS_DIR = Path("/Users/geeksterlab/code/ClemPera/Kinoko/models/images/baseline/results")
+RESULTS_DIR = Path("../models/images/baseline/results")
 
 # ----------------------------------------------------------
 # 📄 PAGE 1 — PROJECT OVERVIEW
@@ -461,49 +439,6 @@ elif selected == "Data Analysis":
         else:
             st.warning("No training logs found yet.")
 
-# # -------------------------------------------------------------
-# # 📄 PAGE 4 — MODELING  (BASELINE vs AUGMENTED vs FINE TUNING)
-# # -------------------------------------------------------------
-
-# elif selected == "Modeling":
-#     st.divider()
-#     st.caption("MODELING (BASELINE ⚔️ AUGMENTED ⚔️ FINE TUNING)")
-#     st.caption("**PLACEHOLDER**")
-
-#     results = []
-
-#     for model_file in keras_files:
-#         model = load_model(model_file)
-#         metrics = model.evaluate(test_ds, return_dict=True, verbose=0)
-#         results.append({
-#             "Model": model_file.stem,
-#             "Loss": metrics["loss"],
-#             "Accuracy": metrics["accuracy"],
-#             "Recall": metrics["recall"],
-#             "Precision": metrics["precision"]
-#         })
-
-#     if checkpoint_file.exists():
-#         dinov2_model = load_model(checkpoint_file)
-#         dinov2_metrics = dinov2_model.evaluate(test_ds, return_dict=True, verbose=0)
-#         results.append({
-#             "Model": "DINOv2",
-#             "Loss": dinov2_metrics["loss"],
-#             "Accuracy": dinov2_metrics["accuracy"],
-#             "Recall": dinov2_metrics["recall"],
-#             "Precision": dinov2_metrics["precision"]
-#         })
-
-#     if not results:
-#         st.warning("No models found. Check that `models/` contains `.keras` files or that `checkpoints/dinov2.keras` exists.")
-#     else:
-#         df_metrics = pd.DataFrame(results)
-
-#         st.subheader("📊 Final Model Comparison")
-#         st.dataframe(df_metrics)
-
-#         st.bar_chart(df_metrics.set_index("Model")[["Accuracy", "Recall", "Precision"]])
-
 # ----------------------------------------------------------
 # 📄 PAGE 5 — PREDICTION
 # ----------------------------------------------------------
@@ -669,7 +604,7 @@ elif selected == "Prediction":
         has_ring = st.selectbox("💍 Ring ", options= [default_option] + list(has_ring_map.keys()))
         does_bruise_or_bleed = st.selectbox("🩸 Bruises or Bleeds?", options= [default_option] + list(does_bruise_or_bleed_map.keys()), help=bruise_bleed_help)
 
-    # ░░ Image Upload ░░
+    # ░░ IMAGE UPLOAD ░░
         st.divider()
         st.markdown("📸 **Upload a photo** *(optional for tabular predict — enables image models)*")
         uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "heic"])
@@ -760,7 +695,7 @@ elif selected == "Prediction":
                 # placeholder.empty()
                 if response.status_code == 200:
                     res = response.json()
-                    # show_result(res[0].get('label'), res[0].get('prob'))
+                    placeholder.empty()
                     show_result(res.get('poisonous'), res.get('probability'))
                 else:
                     st.error(f"🚨 API Error {response.status_code}")
@@ -814,6 +749,7 @@ elif selected == "Prediction":
 
                 if response.status_code == 200:
                     data = response.json()
+                    placeholder.empty()
 
                     st.subheader("📊 Tabular models")
                     for model_name, res in data.get("tab_models", {}).items():
@@ -831,8 +767,9 @@ elif selected == "Prediction":
                             res.get("probability")
                         )
                 else:
+                    placeholder.empty()
                     st.error(f"🚨 API Error: {response.status_code}")
-
+                    placeholder.empty()
             except Exception as e:
                 placeholder.empty()
                 st.error(f'❌🕵 Cannot reach API: {e}')
