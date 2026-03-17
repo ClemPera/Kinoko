@@ -1,30 +1,14 @@
 import pandas as pd
-<<<<<<< env310_test
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import make_pipeline
-from torch import threshold
-=======
-from xgboost import XGBClassifier
-from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.compose import ColumnTransformer
 from sklearn.base import BaseEstimator
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
 
-from .data import get_data, get_data_reduced
-from .preprocess import preprocess_features, tts
-from .utils import add_noise_to_dataset
->>>>>>> main
-
-
-def define_model() -> XGBClassifier:
+def define_model() -> RandomForestClassifier:
     """
     Define the model to perform on tabular data
-<<<<<<< env310_test
-    Model found thanks to AutoML (Flaml), better than with RandomizedSearch on XGBoost
-=======
 
     Returns:
         Classifier model
->>>>>>> main
     """
     model = RandomForestClassifier(
         n_estimators=125,
@@ -68,12 +52,13 @@ def predict(model: Pipeline, data: pd.DataFrame) -> tuple[bool, float]:
         - model : model trained before
         - data : can be a single data to predict
 
-    Returns: 
+    Returns:
         tuple of predicted class and probability
     """
     # Predict and prob
-    pred = model.predict(data)[0]
+
     proba = model.predict_proba(data)
+    pred = (proba[:, 1] >= 0.35).astype(int)
 
     return bool(pred), float(proba[0][pred])
 
@@ -85,18 +70,12 @@ def predict_multiple(model: Pipeline, data: pd.DataFrame):
         - model : model trained before
         - data : can be a single data to predict
 
-    Returns: 
+    Returns:
         List of predicted labels and probabilities
     """
-<<<<<<< env310_test
     #Predict and prob
-    proba = model.predict_proba(data_test)
-    pred = (proba[:, 1] >= threshold).astype(int)
-=======
-    # Predict and prob
-    pred = model.predict(data)
     proba = model.predict_proba(data)
->>>>>>> main
+    pred = (proba[:, 1] >= 0.35).astype(int)
 
     labels = {0: "Edible", 1: "Poisonous"}
 
