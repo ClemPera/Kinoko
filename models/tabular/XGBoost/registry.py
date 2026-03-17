@@ -1,16 +1,19 @@
 import glob
 import os
 import time
-from colorama import Fore, Style
 
 import joblib
 from xgboost import XGBClassifier
 from keras import Model, models
+from sklearn.pipeline import Pipeline
+
 
 def save_model(model, path="ml_logic"):
     """
     Save the model with timestamp
-    - works for keras or other models
+
+    Args:
+        - model: works for keras or other models
     """
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -26,13 +29,14 @@ def save_model(model, path="ml_logic"):
     print(f"✅ Model saved at {model_path}")
 
 
-
 def load_model(path="ml_logic"):
     """
     Load the model
     - works for different models
+    args: 
+        - path: model folder path
     """
-    print(Fore.BLUE + "\nLoad latest model from local registry..." + Style.RESET_ALL)
+    print("\nLoad latest model from local registry...")
 
     local_model_directory = os.path.join(path, "models")
     local_model_paths = glob.glob(f"{local_model_directory}/*")
@@ -42,7 +46,7 @@ def load_model(path="ml_logic"):
 
     most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
-    print(Fore.BLUE + "\nLoad latest model from disk..." + Style.RESET_ALL)
+    print("\nLoad latest model from disk...")
 
     if most_recent_model_path_on_disk.endswith(".keras") or most_recent_model_path_on_disk.endswith(".h5"):
         model = models.load_model(most_recent_model_path_on_disk)

@@ -3,10 +3,10 @@ from datetime import datetime
 
 import matplotlib as plt
 
-from baseline.utils.data_utils import load_data
-from baseline.train import train_model
-from baseline.evaluate import prediction, evaluate
-from baseline.utils.plots_utils import plot_baseline, plot_comparison
+from .utils.data_utils import load_data
+from .train import train_model
+from .evaluate import prediction, evaluate
+from .utils.plots_utils import plot_baseline, plot_comparison
 # ====================================================
 
 
@@ -32,7 +32,8 @@ def main():
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
     # ░░ Training ░░
-    history_1, history_2, baseline, augmented = train_model(train_ds, val_ds, timestamp)
+    history_1, history_2, baseline, augmented = train_model(
+        train_ds, val_ds, timestamp)
 
     # ░░ Prediction & Evaluate ░░
     prediction(baseline, augmented, val_ds, class_names, timestamp)

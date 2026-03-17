@@ -1,7 +1,10 @@
-FungiTastic-OpenSet-Test.csv
 *.keras
+*.pkl
 .DS_Store
 .python-version
+*.csv
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

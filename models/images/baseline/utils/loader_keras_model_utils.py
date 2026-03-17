@@ -1,22 +1,26 @@
 # ===================== IMPORTS ======================
 from pathlib import Path
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model, Model
 
 # ====================================================
 
 
-def load_leras_model(model_file: str):
+def load_keras_model(model_file: str) -> Model:
     """
     Load Keras model from 'DL_logic/models/' for an API endpoint
 
+    /// Arguments ///
+    model_file: Path to the model to load
+
     //// Return ////
-    Charged model
+    Loaded model
     """
 
     base_dir = Path(__file__).resolve().parent.parent
     model_path = base_dir / "models" / model_file
 
     if not model_path.exists():
-        raise FileNotFoundError(f"Le modèle {model_file} n'existe pas dans {model_path}")
+        raise FileNotFoundError(
+            f"Le modèle {model_file} n'existe pas dans {model_path}")
 
     return load_model(model_path)

@@ -1,12 +1,30 @@
 import pandas as pd
+<<<<<<< env310_test
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import make_pipeline
 from torch import threshold
+=======
+from xgboost import XGBClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.base import BaseEstimator
 
-def define_model():
+from .data import get_data, get_data_reduced
+from .preprocess import preprocess_features, tts
+from .utils import add_noise_to_dataset
+>>>>>>> main
+
+
+def define_model() -> XGBClassifier:
     """
     Define the model to perform on tabular data
+<<<<<<< env310_test
     Model found thanks to AutoML (Flaml), better than with RandomizedSearch on XGBoost
+=======
+
+    Returns:
+        Classifier model
+>>>>>>> main
     """
     model = RandomForestClassifier(
         n_estimators=125,
@@ -18,13 +36,18 @@ def define_model():
 
     return model
 
-def train_model(X_train,
-                y_train,
-                pipeline):
+
+def train_model(X_train: pd.DataFrame,
+                y_train: pd.DataFrame,
+                pipeline: BaseEstimator) -> Pipeline:
     """
-    Training the model:
-    - X_train, y_train : from tts()
-    - pipeline: from preprocess_features()
+    Training the model
+
+    Args:
+        - X_train, y_train : from tts()
+        - pipeline: from preprocess_features()
+
+    Returns: Fitted pipeline
     """
     # call the function made before
     model = define_model()
@@ -35,20 +58,45 @@ def train_model(X_train,
     # train model
     pipe_model.fit(X_train, y_train)
 
-    # TODO: add something to save model?
-
     return pipe_model
 
 
-def predict(model, data_test):
+def predict(model: Pipeline, data: pd.DataFrame) -> tuple[bool, float]:
     """
     Prediction function, gives out the predicted class and the associated prob
-    - model : model trained before
-    - data_test : can be a single data to test, or a dataframe with xx rows
+    Args:
+        - model : model trained before
+        - data : can be a single data to predict
+
+    Returns: 
+        tuple of predicted class and probability
     """
+    # Predict and prob
+    pred = model.predict(data)[0]
+    proba = model.predict_proba(data)
+
+    return bool(pred), float(proba[0][pred])
+
+
+def predict_multiple(model: Pipeline, data: pd.DataFrame):
+    """
+    Prediction function, gives out the predicted class and the associated prob
+    Args:
+        - model : model trained before
+        - data : can be a single data to predict
+
+    Returns: 
+        List of predicted labels and probabilities
+    """
+<<<<<<< env310_test
     #Predict and prob
     proba = model.predict_proba(data_test)
     pred = (proba[:, 1] >= threshold).astype(int)
+=======
+    # Predict and prob
+    pred = model.predict(data)
+    proba = model.predict_proba(data)
+>>>>>>> main
 
     labels = {0: "Edible", 1: "Poisonous"}
 
@@ -56,6 +104,9 @@ def predict(model, data_test):
 
     for p, pr in zip(pred, proba):
         prob = round(pr[p] * 100, 2)
-        res.append(f"{labels[p]} avec {prob:.1f}% proba")
+        res.append({
+            "labels": labels[p],
+            "prob": float(prob)
+        })
 
     return res
