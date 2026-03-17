@@ -1,24 +1,23 @@
 import pandas as pd
-from xgboost import XGBClassifier
-from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.compose import ColumnTransformer
 from sklearn.base import BaseEstimator
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline, Pipeline
 
-from .data import get_data, get_data_reduced
-from .preprocess import preprocess_features, tts
-from .utils import add_noise_to_dataset
-
-
-def define_model() -> XGBClassifier:
+def define_model() -> RandomForestClassifier:
     """
     Define the model to perform on tabular data
 
     Returns:
         Classifier model
     """
-    model = XGBClassifier(objective="binary:logistic",
-                          eval_metric="logloss",
-                          random_state=3)
+    model = RandomForestClassifier(
+        n_estimators=125,
+        max_features=0.28106927285321465,
+        max_leaf_nodes=3448,  # ⚠️ max_leaves → max_leaf_nodes en sklearn
+        criterion='gini',
+        n_jobs=-1,
+        random_state=3)
+
     return model
 
 
@@ -53,14 +52,15 @@ def predict(model: Pipeline, data: pd.DataFrame) -> tuple[bool, float]:
         - model : model trained before
         - data : can be a single data to predict
 
-    Returns: 
+    Returns:
         tuple of predicted class and probability
     """
     # Predict and prob
-    pred = model.predict(data)[0]
-    proba = model.predict_proba(data)
 
-    return bool(pred), float(proba[0][pred])
+    proba = model.predict_proba(data)
+    pred = (proba[:, 1] >= 0.35).astype(int).tolist()
+
+    return bool(pred[0]), float(proba[:, pred[0]][0])
 
 
 def predict_multiple(model: Pipeline, data: pd.DataFrame):
@@ -70,12 +70,12 @@ def predict_multiple(model: Pipeline, data: pd.DataFrame):
         - model : model trained before
         - data : can be a single data to predict
 
-    Returns: 
+    Returns:
         List of predicted labels and probabilities
     """
-    # Predict and prob
-    pred = model.predict(data)
+    #Predict and prob
     proba = model.predict_proba(data)
+    pred = (proba[:, 1] >= 0.35).astype(int)
 
     labels = {0: "Edible", 1: "Poisonous"}
 
