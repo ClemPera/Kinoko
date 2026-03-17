@@ -33,18 +33,6 @@ st.set_page_config(
 # ░░ Navigation ░░
 pages = ["Project", "Data Exploration", "Data Analysis", "Prediction"]
 icons = ["book", "search", "bar-chart", "rocket"]
-# pages = ["Project", "Data Exploration", "Data Analysis", "Modeling", "Prediction"]
-# icons = ["book", "search", "bar-chart", "person-lines-fill", "rocket"]
-
-# ░░ Sidebar Navigation ░░
-# with st.sidebar:
-    # selected = option_menu(
-    #     menu_title=None,
-    #     options=pages,
-    #     icons=icons,
-    #     menu_icon="cast",
-    #     default_index=0,
-    # )
 
 
 styles = {
@@ -119,7 +107,7 @@ edible_paths = [p for p in (DATA_DIR / "edible").rglob("*.png")]
 poisonous_paths = [p for p in (DATA_DIR / "poisonous").rglob("*.png")]
 
 # ░░ MODEL BASELINE + AUGMENTED ░░
-results_path = Path("logs/.csv")
+results_path = Path("../models/images/baseline/logs/.csv")
 
 # ░░ LOGS  ░░
 LOG_DIR = Path("../models/images/baseline/logs")
@@ -451,49 +439,6 @@ elif selected == "Data Analysis":
         else:
             st.warning("No training logs found yet.")
 
-# # -------------------------------------------------------------
-# # 📄 PAGE 4 — MODELING  (BASELINE vs AUGMENTED vs FINE TUNING)
-# # -------------------------------------------------------------
-
-# elif selected == "Modeling":
-#     st.divider()
-#     st.caption("MODELING (BASELINE ⚔️ AUGMENTED ⚔️ FINE TUNING)")
-#     st.caption("**PLACEHOLDER**")
-
-#     results = []
-
-#     for model_file in keras_files:
-#         model = load_model(model_file)
-#         metrics = model.evaluate(test_ds, return_dict=True, verbose=0)
-#         results.append({
-#             "Model": model_file.stem,
-#             "Loss": metrics["loss"],
-#             "Accuracy": metrics["accuracy"],
-#             "Recall": metrics["recall"],
-#             "Precision": metrics["precision"]
-#         })
-
-#     if checkpoint_file.exists():
-#         dinov2_model = load_model(checkpoint_file)
-#         dinov2_metrics = dinov2_model.evaluate(test_ds, return_dict=True, verbose=0)
-#         results.append({
-#             "Model": "DINOv2",
-#             "Loss": dinov2_metrics["loss"],
-#             "Accuracy": dinov2_metrics["accuracy"],
-#             "Recall": dinov2_metrics["recall"],
-#             "Precision": dinov2_metrics["precision"]
-#         })
-
-#     if not results:
-#         st.warning("No models found. Check that `models/` contains `.keras` files or that `checkpoints/dinov2.keras` exists.")
-#     else:
-#         df_metrics = pd.DataFrame(results)
-
-#         st.subheader("📊 Final Model Comparison")
-#         st.dataframe(df_metrics)
-
-#         st.bar_chart(df_metrics.set_index("Model")[["Accuracy", "Recall", "Precision"]])
-
 # ----------------------------------------------------------
 # 📄 PAGE 5 — PREDICTION
 # ----------------------------------------------------------
@@ -645,13 +590,13 @@ elif selected == "Prediction":
     with col_a1:
         cap_shape = st.selectbox("🔘 Cap Shape (🚨required)", options=[default_option] + list(cap_shape_map.keys()))
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the cap shapes!"):
-            st.image("../assets/cap_shapes.png", width="stretch")
+            st.image("../stremlit/assets/cap_shapes.png", width="stretch")
         cap_color = st.selectbox("🎨 Cap Color (🚨required)", options=color_options)
         stem_color = st.selectbox("🖍️ Stem Color (🚨required)", options=other_color_options)
         gill_color = st.selectbox("🌈 Gill Color (🚨required)", options=other_color_options)
         gill_attachment = st.selectbox("🔗 Gill Attachment (🚨required)", options=[default_option] + list(gill_attachment_map.keys()),)
         with st.expander("(⁰▿⁰)✋ Need a hint? Check out the gill attachments!"):
-            st.image("../assets/gills_attachments.png", width="stretch")
+            st.image("../streamlit/assets/gills_attachments.png", width="stretch")
 
     with col_a2:
         habitat = st.selectbox("🌿 Habitat", options=habitat_options, help=habitat_help)
