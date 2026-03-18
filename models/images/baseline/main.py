@@ -32,12 +32,12 @@ def main():
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
     # ░░ Training ░░
-    history_1, history_2, baseline, augmented = train_model(
+    history_1, history_2, history_3, baseline, augmented, augmented_2 = train_model(
         train_ds, val_ds, timestamp)
 
     # ░░ Prediction & Evaluate ░░
-    prediction(baseline, augmented, val_ds, class_names, timestamp)
-    evaluate(baseline, augmented, val_ds, timestamp)
+    prediction(baseline, augmented, augmented_2, val_ds, class_names, timestamp)
+    evaluate(baseline, augmented, augmented_2, val_ds, timestamp)
 
     # ░░ Print Results ░░
     print("---" * 40)
@@ -49,6 +49,10 @@ def main():
     print(history_2.history)
     print(augmented.evaluate(val_ds))
     print("---" * 40)
+    print(f"\n 🦾 Augmented_2")
+    print(history_3.history)
+    print(augmented_2.evaluate(val_ds))
+    print("---" * 40)
 
     # ░░ Plot Baseline ░░
     plot_baseline(history_1, timestamp)
@@ -57,7 +61,7 @@ def main():
     plt.close('all')
 
     # ░░ Plot Comparison ░░
-    plot_comparison(history_1, history_2, timestamp)
+    plot_comparison(history_1, history_2, history_3, timestamp)
     plt.show(block=False)
     plt.pause(2)
     plt.close('all')

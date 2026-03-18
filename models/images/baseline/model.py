@@ -1,5 +1,5 @@
 # ===================== IMPORTS ======================
-from tensorflow.keras import Sequential, layers, optimizers
+from tensorflow.keras import Sequential, layers, optimizers, regularizers
 
 from tensorflow.keras.metrics import AUC
 
@@ -59,7 +59,6 @@ def initialize_baseline_model():
     return baseline
 
 # ░░ Compile model ░░
-
 
 def compile_model(model):
     """
@@ -141,3 +140,60 @@ def initialize_augmented_model():
     ])
 
     return augmented
+
+
+# ═════════════════════  BASELINE MODEL DATA AUGMENTATION VERSION II ═════════════════════
+
+
+def initialize_augmented_2_model():
+    """
+    Initialize CNN model with data augmentation version 2 for binary image classification.
+
+    //// Architecture ////
+    - Input layer: 128x128 RGB images, recaled images
+    - Data augmentation : RandomFlip → RandomRotation
+    - Convolutional layers: Conv2D (kernel size, padding, strides, reLu)
+        → BatchNormalization → MaxPool2D (pool size, padding)
+    - Flatten → Dense (reLu, L2 regularisation) → Dropout layers
+    - Output layer : sigmoid
+
+    //// Return ////
+    Uncompiled Keras model with data augmentation version 2 ready for the compilation
+    """
+
+    augmented_2 = Sequential([
+        layers.Input(shape=(128,128,3)),
+        layers.Rescaling(1./255),
+
+        layers.RandomFlip("horizontal"),
+        layers.RandomRotation(0.05),
+
+        layers.Conv2D(32, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
+        layers.BatchNormalization(),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
+
+        layers.Conv2D(64, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
+        layers.BatchNormalization(),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
+
+        layers.Conv2D(128, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
+        layers.BatchNormalization(),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
+
+        layers.Conv2D(256, kernel_size=(3,3), padding="same", activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
+        layers.BatchNormalization(),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
+
+        layers.Flatten(),
+        layers.Dense(256),
+        layers.BatchNormalization(),
+        layers.Activation('relu'),
+        layers.Dropout(0.5),
+
+        layers.Dense(1, activation="sigmoid")
+    ])
+    return augmented_2

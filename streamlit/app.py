@@ -15,6 +15,8 @@ from streamlit_option_menu import option_menu
 import random
 import pandas as pd
 import plotly.graph_objects as go
+import base64
+import streamlit.components.v1 as components
 
 # --- ML / Deep Learning ---
 import tensorflow as tf
@@ -97,6 +99,72 @@ st.markdown("""
             """, unsafe_allow_html=True
 )
 
+
+BASE_DIR = Path(__file__).parent
+img_bytes = (BASE_DIR / "assets" / "mushroom.svg").read_bytes()
+b64 = base64.b64encode(img_bytes).decode()
+src = f"data:image/svg+xml;base64,{b64}"
+
+components.html(f"""
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+    var img = window.parent.document.createElement('img');
+    img.src = "{src}";
+    img.style.cssText = `
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        width: 40px;
+        height: 40px;
+        transform: translate(-50%, -50%);
+        left: -100px;
+        top: -100px;
+    `;
+    window.parent.document.body.appendChild(img);
+
+    window.parent.document.addEventListener('mousemove', function(e) {{
+        img.style.left = e.clientX + 'px';
+        img.style.top = e.clientY + 'px';
+    }});
+</script>
+</head>
+<body></body>
+</html>
+""", height=0)
+
+# def floating_image(svg_path: str, width: int = 80, duration_x: int = 15, duration_y: int = 6):
+#     img_bytes = Path(svg_path).read_bytes()
+#     b64 = base64.b64encode(img_bytes).decode()
+#     src = f"data:image/svg+xml;base64,{b64}"
+
+#     st.markdown(f"""
+#     <style>
+#     .floating-img {{
+#         position: fixed;
+#         width: {width}px;
+#         animation: floatY {duration_y}s ease-in-out infinite,
+#                     moveX  {duration_x}s linear infinite;
+#         z-index: 9999;
+#         pointer-events: none;
+#     }}
+#     @keyframes floatY {{
+#         0%, 100% {{ top: 15%; }}
+#         50%       {{ top: 75%; }}
+#     }}
+#     @keyframes moveX {{
+#         0%   {{ left: -120px; }}
+#         100% {{ left: 110vw;  }}
+#     }}
+#     </style>
+#     <img class="floating-img" src="{src}" />
+#     """, unsafe_allow_html=True)
+
+# # Calling our svg
+# floating_image("assets/mushroom.svg", width=90)
+
+
 # ----------------------------------------------------------
 # 📥 DATA LOADING
 # ----------------------------------------------------------
@@ -126,7 +194,7 @@ if selected == "Project":
     st.header("🍄 :rainbow[Kinoko Lab] 🍄")
     st.divider()
     st.markdown("""
-                **Kinoko Lab** is an end-to-end machine learning application designed to classify mushrooms as edible or poisonous.
+                **Kinoko Lab** is an end-to-end machine & deep learning application designed to classify mushrooms as edible or poisonous.
 
                 The project combines:
                 - 📊 Exploratory Data Analysis
@@ -174,14 +242,16 @@ if selected == "Project":
     """)
 
     st.markdown("""
-                <div style="text-align:center; padding-top: 1.5rem;">
-                    <p style="color:#8ECAE6; font-weight:600; font-size:18px;">
-                        🍄 Thanks for exploring Kinoko Lab!
-                    </p>
-                    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExejZ2bjJ2eHlveTB6c2o1cWhwbGVrM3FxdndrYXFyajZ1Z2djemlwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT1R9JE4hYhm8JmYAU/giphy.gif" width="320">
-                </div>
-                """, unsafe_allow_html=True
-    )
+        <div style="text-align:center; padding-top: 1.5rem;">
+            <p style="color:#8ECAE6; font-weight:600; font-size:18px;">
+                🍄 Thanks for exploring Kinoko Lab! 🍄
+            </p>
+            <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExejZ2bjJ2eHlveTB6c2o1cWhwbGVrM3FxdndrYXFyajZ1Z2djemlwMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT1R9JE4hYhm8JmYAU/giphy.gif" width="320">
+            <p style="color:#8ECAE6; font-size:14px;">
+                Kinokoラボ、ありがとうございました！
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ----------------------------------------------------------
 # 🔍 PAGE 2 — DATA EXPLORATION
@@ -268,7 +338,7 @@ elif selected == "Data Analysis":
         df_results = pd.read_csv(results_path)
         st.subheader("📊 Final Metrics Comparison")
 
-    tab1, tab2, tab3 = st.tabs(["📊 Probability", "📈 Validation", "📉 Metric"])
+    tab1, tab2, tab3 = st.tabs(["📊 Probability", "📈 Validation", "📉 Train"])
 
     with tab1:
         probability_files = sorted(
@@ -280,7 +350,7 @@ elif selected == "Data Analysis":
             df_prob = pd.read_csv(probability_files[0])
             st.subheader("Prediction Comparison for Each Sample")
             st.info(
-                "Use this table to identify disagreements between the two models. "
+                "Use this table to identify differences between the two models. "
                 "A difference in probability may reveal uncertainty, while a difference "
                 "in label or class shows that the models made different final decisions."
             )
@@ -293,11 +363,33 @@ elif selected == "Data Analysis":
                             - If the probability is below 0.5 → label = 0 (edible).
                             - The final class column shows the human-readable prediction.
 
-                            Example → → if both probabilities are below 0.5, both models classify the mushroom as edible.
                 """)
             st.dataframe(df_prob)
             st.warning("Latest Run")
 
+            eval_files = sorted(RESULTS_DIR.glob("df_results_eval_*.csv"), reverse=True)
+            if eval_files:
+                df_eval = pd.read_csv(eval_files[0])
+                st.subheader("📊 Evaluation Metrics", help="""
+    Results from model.evaluate() on the validation set.
+
+    - Accuracy: overall correct predictions.
+    - AUC: ability to separate edible vs poisonous (closer to 1 = better).
+    - Loss: prediction error (lower = better).
+    - Precision: when the model says poisonous, how often it's right.
+    - Recall: ability to catch all poisonous mushrooms.
+
+    🟢 **Green** = best value per metric (highest for accuracy/auc/precision/recall, lowest for loss).
+    🟠 **Orange** = lowest value per metric — not necessarily bad (e.g. a lower recall may still be acceptable depending on the tradeoff between false positives and false negatives).
+
+    """)
+                st.dataframe(
+                    df_eval.style.highlight_max(subset=["accuracy", "auc", "precision", "recall"], color="lightgreen")
+                                .highlight_min(subset=["loss"], color="lightgreen")
+                                .highlight_min(subset=["accuracy", "auc", "precision", "recall"], color="orange")
+                                .highlight_max(subset=["loss"], color="orange"),
+                    use_container_width=True
+                )
         else:
             st.warning("No probability file found.")
 
@@ -319,12 +411,14 @@ elif selected == "Data Analysis":
 
         baseline_logs = sorted(LOG_DIR.glob("baseline_history_*.csv"), reverse=True)
         augmented_logs = sorted(LOG_DIR.glob("augmented_history_*.csv"), reverse=True)
+        augmented_2_logs = sorted(LOG_DIR.glob("augmented_2_history_*.csv"), reverse=True)
 
-        COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518"}
+        COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518", "Augmented_2": "#54A24B"}
 
         if baseline_logs and augmented_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
+            df_augmented_2 = pd.read_csv(augmented_2_logs[0])
 
             def plot_metric(metric):
                 fig = go.Figure()
@@ -341,11 +435,18 @@ elif selected == "Data Analysis":
                     line=dict(color=COLORS["Augmented"], width=2)
                 ))
 
+                fig.add_trace(go.Scatter(
+                    y=df_augmented_2[metric],
+                    name="Augmented 2",
+                    line=dict(color=COLORS["Augmented_2"], width=2)
+                ))
+
                 fig.update_layout(
                     xaxis_title="Epoch",
                     yaxis_title=metric.replace("val_", "").capitalize(),
                     height=300,
                     margin=dict(t=10, b=20),
+                    # xaxis=dict(range=[0, 14])
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -385,12 +486,15 @@ elif selected == "Data Analysis":
 
         baseline_logs = sorted(LOG_DIR.glob("baseline_history_*.csv"), reverse=True)
         augmented_logs = sorted(LOG_DIR.glob("augmented_history_*.csv"), reverse=True)
+        augmented_2_logs = sorted(LOG_DIR.glob("augmented_2_history_*.csv"), reverse=True)
 
-        COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518"}
+        COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518", "Augmented_2": "#54A24B"}
 
         if baseline_logs and augmented_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
+            df_augmented_2 = pd.read_csv(augmented_2_logs[0])
+
 
             def plot_metric_train(metric):
                 fig = go.Figure()
@@ -407,11 +511,18 @@ elif selected == "Data Analysis":
                     line=dict(color=COLORS["Augmented"], width=2)
                 ))
 
+                fig.add_trace(go.Scatter(
+                    y=df_augmented_2[metric],
+                    name="Augmented 2",
+                    line=dict(color=COLORS["Augmented_2"], width=2)
+                ))
+
                 fig.update_layout(
                     xaxis_title="Epoch",
                     yaxis_title=metric.capitalize(),
                     height=300,
                     margin=dict(t=10, b=20),
+                    # xaxis=dict(range=[0, 14])
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -446,10 +557,20 @@ elif selected == "Data Analysis":
 elif selected == "Prediction":
     st.divider()
     st.caption("**Upload your 🍄 mushroom 🍄 and see what will happen... 😉**")
+    st.markdown("""
+                <div style="background-color:#ffd2d2; padding:12px; border-radius:8px; border-left: 4px solid red;">
+                ⚠️ <span style="font-size:18px; color:red;">Kinoko AI models may make mistakes. You are solely responsible for what you eat 🙈.<br>
+                    🇯🇵 Kinokoの<ruby>AI<rt>エーアイ</rt></ruby><ruby>モデル<rt>もでる</rt></ruby>は<ruby>誤<rt>あやま</rt></ruby>りを<ruby>生<rt>しょう</rt></ruby>じる<ruby>可能性<rt>かのうせい</rt></ruby>があります。<ruby>食<rt>た</rt></ruby>べるものについては、ご<ruby>自身<rt>じしん</rt></ruby>の<ruby>責任<rt>せきにん</rt></ruby>でご<ruby>判断<rt>はんだん</rt></ruby>ください🙇。</span>
+                </div>
+                """, unsafe_allow_html=True
+            )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
     with st.expander("📘 How to use this page"):
         st.markdown("""
                     #### 🧾 Required fields
-                    You must fill in all fields marked with 🚨 before making a prediction.
+                    You must fill in all fields marked with 🚨 before making a prediction (for tabular predict & predict all).
 
                     #### 📊 Tabular prediction
                     Uses morphological features only (shape, color, habitat…).
@@ -459,10 +580,6 @@ elif selected == "Prediction":
 
                     #### 🔮 Predict All
                     Runs both tabular and image models and compares their outputs.
-
-                    #### ⚠️ Important
-                    A high confidence score does not guarantee safety.
-                    Never eat a wild mushroom based only on AI prediction 🙈.
     """)
 
     API_URL = "https://kinokoapi-930685077136.europe-west4.run.app"
@@ -604,7 +721,7 @@ elif selected == "Prediction":
 
     # ░░ IMAGE UPLOAD ░░
         st.divider()
-        st.markdown("📸 **Upload a photo** *(optional for tabular predict — enables image models)*")
+        st.markdown("📸 **Upload a photo** *(Enables image models)*")
         uploaded_image = st.file_uploader("", type=["jpg", "jpeg", "png", "heic"])
         if uploaded_image:
             st.image(uploaded_image, width=200)
@@ -690,23 +807,21 @@ elif selected == "Prediction":
                     f"{API_URL}/predict_tab",
                     params=tab_params
                 )
-                # placeholder.empty()
                 if response.status_code == 200:
                     res = response.json()
                     placeholder.empty()
                     show_result(res.get('poisonous'), res.get('probability'))
                 else:
+                    placeholder.empty()
                     st.error(f"🚨 API Error {response.status_code}")
+                    placeholder.empty()
             except Exception as e:
                 placeholder.empty()
                 st.error(f"❌🕵 Cannot reach API: {e}")
 
     # ░░ PREDICT IMAGE ░░
-    if missing:
-        st.warning(f"👮‍♀️✋ Please fill in 🚨 required fields: {', '.join(missing)}")
-
     with col_b2:
-        if st.button("📷 Image predict", disabled=not uploaded_image or bool(missing)):
+        if st.button("📷 Image predict", disabled=not uploaded_image):
             placeholder = st.empty()
             placeholder.image("https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHBibWM3ejVubTN6ZGNiNnV1OWYwaGx1ZzZhNDdpa3F2YTh2amNkdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lwPZlz1u7s3hnY69q3/giphy.gif")
             try:
@@ -729,9 +844,6 @@ elif selected == "Prediction":
                 st.error(f"❌🕵 Cannot reach API: {e}")
 
     # ░░ PREDICT ALL ░░
-    if missing:
-        st.warning(f"👮‍♀️✋ Please fill in 🚨 required fields: {', '.join(missing)}")
-
     with col_b3:
         if st.button(f"🔮 Predict All", disabled=not uploaded_image or bool(missing)):
             placeholder = st.empty()
