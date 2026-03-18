@@ -19,12 +19,12 @@ from .utils import *
 app = FastAPI()
 
 # Image models
-model_dinov2: Model | None = None
-model_baseline: Model | None = None
-model_baseline_aug: Model | None = None
+model_dinov2 = dinov2_load_model_("models/images/dinov2/checkpoints/dinov2.keras")
+model_baseline = baseline_load_model("model_1.keras")
+model_baseline_aug = baseline_load_model("augmented_1.keras")
 
 # Tabular models
-model_XGBoost: XGBClassifier | None = None
+model_XGBoost: XGBClassifier = XGBoost_load_model("models/tabular/XGBoost")  # type: ignore
 
 # Allowing all middleware
 app.add_middleware(
@@ -71,11 +71,6 @@ def predict_tab(
         "season": season
     }])
 
-    if model_XGBoost is None:
-        model_XGBoost = XGBoost_load_model(
-            "models/tabular/XGBoost")  # type: ignore
-        assert model_XGBoost is not None
-
     is_poisonous, probability = XGBoost_predict(model_XGBoost, data)
 
     return {
@@ -105,27 +100,14 @@ def predict_img(
     image: ImageFile.ImageFile = Image.open(file.file)
     match model:
         case "dinov2_baseline":
-            if model_dinov2 is None:
-                model_dinov2 = dinov2_load_model_(
-                    "models/images/dinov2/checkpoints/dinov2.keras")
-                assert model_dinov2 is not None
-
             is_poisonous, probability = dinov2_predict(model_dinov2, image)
 
         case "baseline":
-            if model_baseline is None:
-                model_baseline = baseline_load_model("model_1.keras")
-                assert model_baseline is not None
-
             df_image = pil_to_dataset(image)
             is_poisonous, probability = baseline_prediction(
                 model_baseline, df_image)
 
         case "baseline_aug":
-            if model_baseline_aug is None:
-                model_baseline_aug = baseline_load_model("augmented_1.keras")
-                assert model_baseline_aug is not None
-
             df_image = pil_to_dataset(image)
             is_poisonous, probability = baseline_prediction(
                 model_baseline_aug, df_image)
