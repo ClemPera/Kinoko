@@ -50,8 +50,8 @@ def plot_baseline(history, timestamp: str):
     plt.tight_layout()
 
     # ░░ 💾 Save ░░
-    os.makedirs("DL_logic/plots", exist_ok=True)
-    plt.savefig(f"DL_logic/plots/baseline_{timestamp}.png")
+    os.makedirs("models/images/baseline/plots", exist_ok=True)
+    plt.savefig(f"models/images/baseline/plots/baseline_{timestamp}.png")
     plt.show(block=False)
     plt.pause(2)
     plt.close()
@@ -59,7 +59,7 @@ def plot_baseline(history, timestamp: str):
 # ░░░░░░░░░░░░░░ 📈 Plots : Baseline vs Augmented ░░░░░░░░░░░░░░
 
 
-def plot_comparison(history, history_2, timestamp: str):
+def plot_comparison(history, history_2, history_3, timestamp: str):
     """
     Compare training metrics (Loss, Accuracy, Precision, Recall, AUC)
     for the two models.
@@ -72,6 +72,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[0].plot(history.epoch, history.history["loss"], label="Baseline")
     ax[0].plot(history_2.epoch, history_2.history["loss"],
                label="Augmented", color="red")
+    ax[0].plot(history_3.epoch, history_3.history["loss"],
+               label="Augmented_2", color="green")
     ax[0].legend()
 
     # ░░ Row 2 : Val loss ░░
@@ -79,6 +81,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[1].plot(history.epoch, history.history["val_loss"], label="Baseline")
     ax[1].plot(history_2.epoch, history_2.history["val_loss"],
                label="Augmented", color="red")
+    ax[1].plot(history_3.epoch, history_3.history["val_loss"],
+               label="Augmented_3", color="green")
     ax[1].legend()
 
     # ░░ Row 3 : Train Accuracy ░░
@@ -86,6 +90,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[2].plot(history.epoch, history.history["accuracy"], label="Baseline")
     ax[2].plot(history_2.epoch, history_2.history["accuracy"],
                label="Augmented", color="red")
+    ax[2].plot(history_3.epoch, history_3.history["accuracy"],
+               label="Augmented_2", color="green")
     ax[2].legend()
 
     # ░░ Row 4 : Val Accuracy ░░
@@ -93,6 +99,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[3].plot(history.epoch, history.history["val_accuracy"], label="Baseline")
     ax[3].plot(history_2.epoch, history_2.history["val_accuracy"],
                label="Augmented", color="red")
+    ax[3].plot(history_3.epoch, history_3.history["val_accuracy"],
+               label="Augmented_2", color="green")
     ax[3].legend()
 
     # ░░ Row 5 : Train AUC ░░
@@ -100,6 +108,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[4].plot(history.epoch, history.history["auc"], label="Baseline")
     ax[4].plot(history_2.epoch, history_2.history["auc"],
                label="Augmented", color="red")
+    ax[4].plot(history_3.epoch, history_3.history["auc"],
+               label="Augmented_2", color="green")
     ax[4].legend()
 
     # ░░ Row 6 : Val AUC ░░
@@ -107,6 +117,8 @@ def plot_comparison(history, history_2, timestamp: str):
     ax[5].plot(history.epoch, history.history["val_auc"], label="Baseline")
     ax[5].plot(history_2.epoch, history_2.history["val_auc"],
                label="Augmented", color="red")
+    ax[5].plot(history_3.epoch, history_3.history["val_auc"],
+               label="Augmented_2", color="green")
     ax[5].legend()
 
     for row in ax:
@@ -116,8 +128,8 @@ def plot_comparison(history, history_2, timestamp: str):
 
     # ░░ 💾 Save ░░
 
-    os.makedirs("DL_logic/plots", exist_ok=True)
-    plt.savefig(f"DL_logic/plots/comparison_{timestamp}.png")
+    os.makedirs("../models/images/baseline/plots", exist_ok=True)
+    plt.savefig(f"../models/images/baseline/plots/comparison_{timestamp}.png")
     plt.show(block=False)
     plt.pause(2)
     plt.close()

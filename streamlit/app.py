@@ -110,6 +110,19 @@ components.html(f"""
 <html>
 <head>
 <script>
+    // Hide the original cursor everywhere except in dropdowns
+    var style = window.parent.document.createElement('style');
+    style.textContent = `
+        * {{ cursor: none !important; }}
+        [data-baseweb="select"] *,
+        [data-baseweb="popover"] *,
+        [role="listbox"] *,
+        [role="option"] * {{
+            cursor: pointer !important;
+        }}
+    `;
+    window.parent.document.head.appendChild(style);
+
     var img = window.parent.document.createElement('img');
     img.src = "{src}";
     img.style.cssText = `
@@ -134,6 +147,7 @@ components.html(f"""
 </html>
 """, height=0)
 
+## If you want an image that roams across your entire website
 # def floating_image(svg_path: str, width: int = 80, duration_x: int = 15, duration_y: int = 6):
 #     img_bytes = Path(svg_path).read_bytes()
 #     b64 = base64.b64encode(img_bytes).decode()
@@ -362,9 +376,42 @@ elif selected == "Data Analysis":
                             - If the probability is greater than 0.5 → label = 1 (poisonous).
                             - If the probability is below 0.5 → label = 0 (edible).
                             - The final class column shows the human-readable prediction.
-
                 """)
-            st.dataframe(df_prob)
+
+            def highlight_correct(row):
+                true = row["true_label"]
+                colors = [""] * len(row)
+                cols = row.index.tolist()
+
+                for col_name in ["Baseline_label", "Augmented_label", "Augmented_2_label"]:
+                    if col_name in cols:
+                        idx = cols.index(col_name)
+                        if row[col_name] == true:
+                            colors[idx] = "background-color: #90EE90"
+                return colors
+
+            st.dataframe(df_prob.style.apply(highlight_correct, axis=1))
+
+            # ░░ Error stats per model ░░
+
+            st.subheader("Error stats per model",
+            help="False positives ☠️→🍄: predicted poisonous but actually edible — harmless but wasteful\n\nFalse negatives 🍄→☠️: predicted edible but actually poisonous — dangerous !")
+            for col_label, model_name in [
+                ("Baseline_label",    "🧱 Baseline"),
+                ("Augmented_label",   "💪 Augmented"),
+                ("Augmented_2_label", "🦾 Augmented_2"),
+            ]:
+                if col_label in df_prob.columns:
+                    errors = df_prob[df_prob[col_label] != df_prob["true_label"]]
+                    fp = len(df_prob[(df_prob[col_label] == 1) & (df_prob["true_label"] == 0)])
+                    fn = len(df_prob[(df_prob[col_label] == 0) & (df_prob["true_label"] == 1)])
+
+                    st.markdown(f"**{model_name}**")
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("Error rate", f"{len(errors)/len(df_prob)*100:.1f}%")
+                    col2.metric("False positives ☠️→🍄", fp)
+                    col3.metric("False negatives 🍄→☠️", fn)
+
             st.warning("Latest Run")
 
             eval_files = sorted(RESULTS_DIR.glob("df_results_eval_*.csv"), reverse=True)
@@ -560,7 +607,8 @@ elif selected == "Prediction":
     st.markdown("""
                 <div style="background-color:#ffd2d2; padding:12px; border-radius:8px; border-left: 4px solid red;">
                 ⚠️ <span style="font-size:18px; color:red;">Kinoko AI models may make mistakes. You are solely responsible for what you eat 🙈.<br>
-                    🇯🇵 Kinokoの<ruby>AI<rt>エーアイ</rt></ruby><ruby>モデル<rt>もでる</rt></ruby>は<ruby>誤<rt>あやま</rt></ruby>りを<ruby>生<rt>しょう</rt></ruby>じる<ruby>可能性<rt>かのうせい</rt></ruby>があります。<ruby>食<rt>た</rt></ruby>べるものについては、ご<ruby>自身<rt>じしん</rt></ruby>の<ruby>責任<rt>せきにん</rt></ruby>でご<ruby>判断<rt>はんだん</rt></ruby>ください🙇。</span>
+                    🇯🇵 Kinokoの<ruby>AI<rt>エーアイ</rt></ruby><ruby>モデル<rt>もでる</rt></ruby>は<ruby>誤<rt>あやま</rt></ruby>りを<ruby>生<rt>しょう</rt></ruby>じる<ruby>可能性<rt>かのうせい</rt></ruby>があります。<ruby>食<rt>た</rt></ruby>べるものについては、ご<ruby>自身<rt>じしん</rt></ruby>の<ruby>責任<rt>せきにん</rt></ruby>でご<ruby>判断<rt>はんだん</rt></ruby>ください🙇。<br>
+                    🇫🇷 Les modèles IA de Kinoko peuvent faire des erreurs. Vous êtes seul responsable de ce que vous mangez 🙈.</span>
                 </div>
                 """, unsafe_allow_html=True
             )
@@ -794,7 +842,7 @@ elif selected == "Prediction":
 
     # ░░ PREDICT TABULAR ░░
     if missing:
-        st.warning(f"👮‍♀️✋ Please fill in 🚨 required fields: {', '.join(missing)}")
+        st.warning(f"👮‍♀️✋ Please fill in 🚨 required fields: {', '.join(missing)} *(Tabular & Predict All only)*")
 
     with col_b1:
         if st.button("📊 Tabular predict", disabled = bool(missing)):

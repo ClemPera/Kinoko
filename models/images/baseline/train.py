@@ -97,6 +97,7 @@ def callback(model):
     """
 
     es = EarlyStopping(
+        monitor="val_loss",
         patience=15,
         restore_best_weights=True
     )
@@ -107,8 +108,9 @@ def callback(model):
                                            save_best_only=True)
 
     lr_reducer = callbacks.ReduceLROnPlateau(monitor="val_loss",
-                                             factor=0.1,
-                                             patience=3,
+                                             factor=0.5,
+                                             patience=5,
+                                             cooldown=2,
                                              verbose=1,
                                              min_lr=1e-6)
 
