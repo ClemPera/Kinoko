@@ -55,9 +55,11 @@ def get_data(path: str) -> pd.DataFrame:
     data_tabular_rdm = data_tabular_final.sample(
         frac=1, random_state=3).reset_index(drop=True)
 
-    # Apply a noise to the data : TOO perfect is not good
-    data_tab_rdm_noise = add_noise_to_dataset(
-        data_tabular_rdm, noise_fraction=0.12)
+    # --- apply noise only to numeric features (exclude class & scientific_name) ---
+    cols_to_skip = ['class', 'scientific_name']
+    cols_to_noise = [c for c in data_tabular_rdm.columns if c not in cols_to_skip]
+
+    data_tab_rdm_noise = add_noise_to_dataset(data_tabular_rdm, noise_fraction=0.12, columns=cols_to_noise)
 
     print("✅ Tabular data loaded and cleaned, shape:", data_tabular_rdm.shape)
     return data_tab_rdm_noise
