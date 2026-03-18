@@ -3,10 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
 from PIL import Image, ImageFile
-from datetime import datetime
 
 from xgboost import XGBClassifier
-from keras import Model
 
 from models.tabular.XGBoost.registry import load_model as XGBoost_load_model
 from models.tabular.XGBoost.model import predict as XGBoost_predict
@@ -22,6 +20,7 @@ app = FastAPI()
 model_dinov2 = dinov2_load_model_("models/images/dinov2/checkpoints/dinov2.keras")
 model_baseline = baseline_load_model("model_1.keras")
 model_baseline_aug = baseline_load_model("augmented_1.keras")
+model_baseline_aug_2 = baseline_load_model("augmented_5.keras")
 
 # Tabular models
 model_XGBoost: XGBClassifier = XGBoost_load_model("models/tabular/XGBoost")  # type: ignore
@@ -111,6 +110,11 @@ def predict_img(
             df_image = pil_to_dataset(image)
             is_poisonous, probability = baseline_prediction(
                 model_baseline_aug, df_image)
+            
+        case "baseline_aug_2":
+            df_image = pil_to_dataset(image)
+            is_poisonous, probability = baseline_prediction(
+                model_baseline_aug_2, df_image)
 
         case _:
             raise HTTPException(
@@ -128,7 +132,7 @@ def models():
     Returns the list of models available
     """
     return {
-        "img_models": ["dinov2_baseline", "baseline", "baseline_aug"],
+        "img_models": ["dinov2_baseline", "baseline", "baseline_aug", "baseline_aug_2"],
         "tab_models": ["tabular"]
     }
 

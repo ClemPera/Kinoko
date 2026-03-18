@@ -103,37 +103,39 @@ def initialize_augmented_model():
     """
 
     augmented = Sequential([
-        layers.Input(shape=(128, 128, 3)),
+        layers.Input(shape=(128,128,3)),
         layers.Rescaling(1./255),
 
         layers.RandomFlip("horizontal"),
         layers.RandomRotation(0.05),
-        layers.RandomZoom(0.05),
+        #layers.RandomZoom(0.05),
+        #layers.RandomBrightness(0.02),
 
-        layers.Conv2D(32, kernel_size=(4, 4), padding="same",
-                      strides=(1, 1), activation='relu'),
+        layers.Conv2D(32, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
 
-        layers.Conv2D(64, kernel_size=(3, 3), padding="same",
-                      strides=(1, 1), activation='relu'),
+        layers.Conv2D(64, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
 
-        layers.Conv2D(128, kernel_size=(3, 3), padding="same",
-                      strides=(1, 1), activation='relu'),
+        layers.Conv2D(128, kernel_size = (3,3), padding="same", strides = (1,1), activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
 
-        layers.Conv2D(256, kernel_size=(3, 3),
-                      padding="same", activation='relu'),
+        layers.Conv2D(256, kernel_size=(3,3), padding="same", activation='relu', kernel_regularizer=regularizers.L2(1e-4)),
         layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(2, 2), padding="same"),
+        layers.MaxPool2D(pool_size=(2,2), padding="same"),
+        layers.Dropout(0.2),
 
-        layers.GlobalAveragePooling2D(),
-        layers.Dense(128, activation='relu',
-                     kernel_regularizer=tf.keras.regularizers.l2(1e-5)),
-        layers.Dropout(0.4),
+        layers.Flatten(),
+        layers.Dense(256),
+        layers.BatchNormalization(),
+        layers.Activation('relu'),
+        layers.Dropout(0.5),
 
         layers.Dense(1, activation="sigmoid")
     ])
