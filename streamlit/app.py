@@ -415,7 +415,7 @@ elif selected == "Data Analysis":
 
         COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518", "Augmented_2": "#54A24B"}
 
-        if baseline_logs and augmented_logs:
+        if baseline_logs and augmented_logs and augmented_2_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
             df_augmented_2 = pd.read_csv(augmented_2_logs[0])
@@ -490,7 +490,7 @@ elif selected == "Data Analysis":
 
         COLORS = {"Baseline": "#4C78A8", "Augmented": "#F58518", "Augmented_2": "#54A24B"}
 
-        if baseline_logs and augmented_logs:
+        if baseline_logs and augmented_logs and augmented_2_logs:
             df_baseline = pd.read_csv(baseline_logs[0])
             df_augmented = pd.read_csv(augmented_logs[0])
             df_augmented_2 = pd.read_csv(augmented_2_logs[0])
