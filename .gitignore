@@ -4,6 +4,7 @@
 .python-version
 *.csv
 .vscode
+.streamlit
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
