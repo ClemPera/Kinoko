@@ -1,6 +1,5 @@
 # 🍄 Kinoko Lab
 
-[![Kinoko Pipeline](https://github.com/ClemPera/Kinoko/actions/workflows/ci.yml/badge.svg)](https://github.com/ClemPera/Kinoko/actions)
 [![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.streamlit.app)
 
 ---
@@ -108,8 +107,9 @@ cd Kinoko
 
 2. Create and activate a Python 3.12+ virtual environment:
 ```bash
-python3.12 -m venv env
-source env/bin/activate  # On Windows: env\Scripts\activate
+pyenv virtualenv 3.12.9 kinoko
+
+pyenv local kinoko
 ```
 
 3. Install the dependencies:
@@ -161,4 +161,4 @@ You can try the app directly on Streamlit without installing anything locally:
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 See the [LICENSE](./LICENSE) file for full details.
 
-© 2026 [ClemPera][basspeif][Seiiferu]
+© 2026 [ClemPera](https://github.com/ClemPera) · [basspeif](https://github.com/basspeif) · [Seiiferu](https://github.com/Seiiferu)
