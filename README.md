@@ -1,6 +1,13 @@
-# 🍄 Kinoko Lab
+# 🍄 Kinoko Lab [![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.streamlit.app)
 
-[![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.streamlit.app)
+
+## ⚠️ Disclaimer
+
+> **Kinoko AI models may make mistakes. You are solely responsible for what you eat 🙈.**
+>
+> 🇯🇵 KinokoのAIモデルは誤りを生じる可能性があります。食べるものについては、ご自身の責任でご判断ください🙇。
+>
+> 🇫🇷 Les modèles IA de Kinoko peuvent faire des erreurs. Vous êtes seul responsable de ce que vous mangez 🙈.
 
 ---
 
@@ -121,25 +128,14 @@ pip install -r requirements.txt
 
 ## 🚀 Usage
 
-1. **Run the API backend:**
-```bash
-uvicorn api.fast:app --reload
-```
 
-2. **Run the Streamlit web interface:**
-```bash
-streamlit run streamlit/app.py
-```
-
-3. **Run with Docker:**
-```bash
-docker-compose up --build
-```
-
-4. **Train a model (example — CNN Baseline):**
-```bash
-python models/images/baseline/main.py
-```
+| Command | Description |
+|---|---|
+| `make install` | Install dependencies |
+| `make run_api` | Run the FastAPI backend |
+| `make run_streamlit` | Run the Streamlit interface |
+| `make run_docker` | Run with Docker |
+| `make train_baseline` | Train the CNN baseline |
 
 ---
 
