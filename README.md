@@ -148,8 +148,8 @@ You can try the app directly on Streamlit without installing anything locally:
 
 ## 📊 Datasets
 
-- [image dataset](https://www.kaggle.com/datasets/derekkunowilliams/mushrooms?select=mushroom_dataset)
-- [table dataset](https://archive.ics.uci.edu/dataset/848/secondary+mushroom+dataset)
+- [Image dataset](https://www.kaggle.com/datasets/derekkunowilliams/mushrooms?select=mushroom_dataset)
+- [Table dataset](https://archive.ics.uci.edu/dataset/848/secondary+mushroom+dataset)
 
 ## 📄 License
 
