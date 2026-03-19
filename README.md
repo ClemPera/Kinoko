@@ -131,11 +131,10 @@ pip install -r requirements.txt
 
 | Command | Description |
 |---|---|
-| `make install` | Install dependencies |
+| `make install_dep` | Install dependencies |
 | `make run_api` | Run the FastAPI backend |
 | `make run_streamlit` | Run the Streamlit interface |
 | `make run_docker` | Run with Docker |
-| `make train_baseline` | Train the CNN baseline |
 
 ---
 
