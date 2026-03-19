@@ -393,7 +393,6 @@ elif selected == "Data Analysis":
             st.dataframe(df_prob.style.apply(highlight_correct, axis=1))
 
             # ░░ Error stats per model ░░
-
             st.subheader("Error stats per model",
             help="False positives ☠️→🍄: predicted poisonous but actually edible — harmless but wasteful\n\nFalse negatives 🍄→☠️: predicted edible but actually poisonous — dangerous !")
             for col_label, model_name in [
@@ -403,14 +402,15 @@ elif selected == "Data Analysis":
             ]:
                 if col_label in df_prob.columns:
                     errors = df_prob[df_prob[col_label] != df_prob["true_label"]]
-                    fp = len(df_prob[(df_prob[col_label] == 1) & (df_prob["true_label"] == 0)])
+                    # fp = len(df_prob[(df_prob[col_label] == 1) & (df_prob["true_label"] == 0)])
                     fn = len(df_prob[(df_prob[col_label] == 0) & (df_prob["true_label"] == 1)])
 
                     st.markdown(f"**{model_name}**")
                     col1, col2, col3 = st.columns(3)
                     col1.metric("Error rate", f"{len(errors)/len(df_prob)*100:.1f}%")
-                    col2.metric("False positives ☠️→🍄", fp)
-                    col3.metric("False negatives 🍄→☠️", fn)
+                    # col2.metric("False positives ☠️→🍄", fp)
+                    total_poisonous = len(df_prob[df_prob["true_label"] == 1])
+                    col2.metric("False negatives 🍄→☠️", f"{fn}/{total_poisonous}")
 
             st.warning("Latest Run")
 
@@ -493,7 +493,6 @@ elif selected == "Data Analysis":
                     yaxis_title=metric.replace("val_", "").capitalize(),
                     height=300,
                     margin=dict(t=10, b=20),
-                    # xaxis=dict(range=[0, 14])
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -569,7 +568,6 @@ elif selected == "Data Analysis":
                     yaxis_title=metric.capitalize(),
                     height=300,
                     margin=dict(t=10, b=20),
-                    # xaxis=dict(range=[0, 14])
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
