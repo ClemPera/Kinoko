@@ -73,7 +73,7 @@ def compile_model(model):
     Compiled baseline model ready for training
     """
 
-    adam = optimizers.Adam(learning_rate=1e-4)
+    adam = optimizers.Adam(learning_rate=1e-3)
     model.compile(
         loss="binary_crossentropy",
         optimizer=adam,
