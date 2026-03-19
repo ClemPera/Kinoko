@@ -131,11 +131,10 @@ pip install -r requirements.txt
 
 | Command | Description |
 |---|---|
-| `make install` | Install dependencies |
+| `make install_dep` | Install dependencies |
 | `make run_api` | Run the FastAPI backend |
 | `make run_streamlit` | Run the Streamlit interface |
 | `make run_docker` | Run with Docker |
-| `make train_baseline` | Train the CNN baseline |
 
 ---
 
@@ -149,8 +148,8 @@ You can try the app directly on Streamlit without installing anything locally:
 
 ## 📊 Datasets
 
-- [image dataset](https://www.kaggle.com/datasets/derekkunowilliams/mushrooms?select=mushroom_dataset)
-- [table dataset](https://archive.ics.uci.edu/dataset/848/secondary+mushroom+dataset)
+- [Image dataset](https://www.kaggle.com/datasets/derekkunowilliams/mushrooms?select=mushroom_dataset)
+- [Table dataset](https://archive.ics.uci.edu/dataset/848/secondary+mushroom+dataset)
 
 ## 📄 License
 
