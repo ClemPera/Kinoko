@@ -628,7 +628,7 @@ elif selected == "Prediction":
                     Runs both tabular and image models and compares their outputs.
     """)
 
-    API_URL = "https://kinokoapi-930685077136.europe-west4.run.app"
+    API_URL = "https://api-kinoko.nextmiracle.eu"
 
     # ░░ DESIGN ░░
     st.markdown(

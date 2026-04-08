@@ -1,4 +1,4 @@
-# 🍄 Kinoko Lab [![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.streamlit.app)
+# 🍄 Kinoko Lab [![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.nextmiracle.eu)
 
 
 ## ⚠️ Disclaimer
@@ -142,7 +142,7 @@ pip install -r requirements.txt
 
 You can try the app directly on Streamlit without installing anything locally:
 
-[![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.streamlit.app)
+[![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kinoko.nextmiracle.eu)
 
 ---
 
