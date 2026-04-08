@@ -10,5 +10,6 @@ run_streamlit:
 	streamlit run streamlit/app.py
 
 run_docker:
-	docker build -t kinoko_api .
-	docker compose up
+	docker build -t kinoko_api . -f api.Dockerfile
+	docker build -t kinoko_streamlit . -f streamlit.Dockerfile
+	docker compose up -d

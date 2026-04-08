@@ -6,3 +6,9 @@ services:
     restart: unless-stopped
     environment:
     - PORT=8080
+
+  kinoko_streamlit:
+    image: kinoko_streamlit
+    ports: 
+    - 8015:8501
+    restart: unless-stopped
