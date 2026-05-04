@@ -1,6 +1,5 @@
 services:
   kinoko_api:
-    # image: kinoko_api
     build: 
       dockerfile: ./api.Dockerfile
     ports:
@@ -10,7 +9,6 @@ services:
     - PORT=8080
 
   kinoko_streamlit:
-    # image: kinoko_streamlit
     build: 
       dockerfile: ./streamlit.Dockerfile
     ports: 
