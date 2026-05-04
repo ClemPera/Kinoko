@@ -1,6 +1,8 @@
 services:
   kinoko_api:
-    image: kinoko_api
+    # image: kinoko_api
+    build: 
+      dockerfile: ./api.Dockerfile
     ports:
     - 8000:8080
     restart: unless-stopped
@@ -8,7 +10,9 @@ services:
     - PORT=8080
 
   kinoko_streamlit:
-    image: kinoko_streamlit
+    # image: kinoko_streamlit
+    build: 
+      dockerfile: ./streamlit.Dockerfile
     ports: 
     - 8015:8501
     restart: unless-stopped
