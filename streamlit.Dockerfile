@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY data /app/data
 COPY streamlit /app/streamlit
+COPY models/images/baseline/logs /app/models/images/baseline/logs
+COPY models/images/baseline/results /app/models/images/baseline/results
 COPY requirements_streamlit.txt /app/
 
 WORKDIR /app
